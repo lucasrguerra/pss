@@ -21,6 +21,7 @@ export interface BurstSegment {
 }
 
 export interface Process {
+  pid?: number; // auto-incremented sequential integer (1, 2, 3…); set by store
   id: string;
   name: string;
   arrivalTime: number; // tick of arrival (≥ 0)
@@ -31,6 +32,13 @@ export interface Process {
 
 // --------------- Scheduler configuration --------------------
 
+export interface MlqQueueDef {
+  priorityMin: number; // inclusive lower bound
+  priorityMax: number; // inclusive upper bound
+  algorithm: "FCFS" | "RR" | "PRIORITY_NP";
+  quantum: number; // used only when algorithm === "RR"
+}
+
 export interface SchedulerConfig {
   algorithm: SchedulingAlgorithm;
   quantum: number; // for RR (default 2)
@@ -38,6 +46,7 @@ export interface SchedulerConfig {
   isPreemptive: boolean; // applicable to SJF and Priority
   agingEnabled: boolean; // prevent starvation in Priority scheduling
   agingInterval: number; // ticks in Ready before priority-- (min 1)
+  mlqQueues?: MlqQueueDef[]; // queue definitions for MULTILEVEL algorithm
 }
 
 // --------------- Runtime state ------------------------------

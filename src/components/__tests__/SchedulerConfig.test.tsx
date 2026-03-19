@@ -65,10 +65,10 @@ describe('SchedulerConfig', () => {
     expect(screen.getByLabelText('Quantum do Round Robin')).toBeInTheDocument();
   });
 
-  it('shows Quantum field when algorithm is MULTILEVEL', () => {
+  it('shows MLQ queue config panel when algorithm is MULTILEVEL', () => {
     setAlgorithm('MULTILEVEL');
     render(<SchedulerConfig />);
-    expect(screen.getByTestId('quantum-field')).toBeInTheDocument();
+    expect(screen.getByTestId('mlq-queues-config')).toBeInTheDocument();
   });
 
   it('does NOT show Quantum field for SJF_NP', () => {

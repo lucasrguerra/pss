@@ -23,7 +23,7 @@ const MetricsTable = ({ metrics, processMap }: MetricsTableProps) => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-xs text-slate-300 border-collapse min-w-[700px]">
+      <table className="w-full text-xs text-slate-300 border-collapse min-w-175">
         <thead>
           <tr className="text-[10px] text-slate-400 uppercase tracking-wider border-b border-slate-700">
             <th className="text-left px-3 py-2 font-medium">Processo</th>
@@ -55,6 +55,11 @@ const MetricsTable = ({ metrics, processMap }: MetricsTableProps) => {
                       className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
                       style={{ backgroundColor: color }}
                     />
+                    {proc?.pid !== undefined && (
+                      <span className="text-[11px] font-mono font-semibold text-slate-400 bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
+                        #{proc.pid}
+                      </span>
+                    )}
                     <span className="font-medium text-slate-200">{name}</span>
                   </div>
                 </td>

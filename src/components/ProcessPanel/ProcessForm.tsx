@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Minus, Check, X } from 'lucide-react';
-import type { Process, BurstSegment } from '@core/types';
+import type { BurstSegment, Process } from '@core/types';
 import { useProcessStore } from '../../store/processStore';
 import IconButton from '../shared/IconButton';
 import { generateId, nextColor } from '../shared/processUtils';
@@ -32,7 +32,7 @@ const ProcessForm = ({ editingProcess, onClose }: ProcessFormProps) => {
       setArrivalTime(editingProcess.arrivalTime);
       setPriority(editingProcess.priority);
       setColor(editingProcess.color);
-      setBursts([...editingProcess.bursts.map(b => ({ ...b }))]);
+      setBursts([...editingProcess.bursts.map((b: BurstSegment) => ({ ...b }))]);
     } else {
       setName('');
       setArrivalTime(0);
@@ -89,15 +89,14 @@ const ProcessForm = ({ editingProcess, onClose }: ProcessFormProps) => {
     if (isEditing && editingProcess) {
       updateProcess(editingProcess.id, { name: name.trim(), arrivalTime, priority, color, bursts });
     } else {
-      const p: Process = {
+      addProcess({
         id: generateId(),
         name: name.trim(),
         arrivalTime,
         priority,
         color,
         bursts,
-      };
-      addProcess(p);
+      });
     }
     onClose();
   };
@@ -141,7 +140,7 @@ const ProcessForm = ({ editingProcess, onClose }: ProcessFormProps) => {
               type="color"
               value={color}
               onChange={e => setColor(e.target.value)}
-              className="h-[34px] w-12 rounded-md border border-slate-600 bg-slate-700 cursor-pointer"
+              className="h-8.5 w-12 rounded-md border border-slate-600 bg-slate-700 cursor-pointer"
               aria-label="Cor do processo"
             />
           </div>

@@ -1,8 +1,9 @@
+import { Plus, Trash2 } from 'lucide-react';
 import { useProcessStore } from '../../store/processStore';
-import type { SchedulingAlgorithm } from '@core/types';
+import type { MlqQueueDef, SchedulingAlgorithm } from '@core/types';
 
-// Algorithms that require a quantum parameter
-const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'PRIORITY_RR', 'MULTILEVEL']);
+// Algorithms that require a global quantum parameter
+const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'PRIORITY_RR']);
 
 // Algorithms where aging (anti-starvation) is applicable
 const AGING_ALGORITHMS = new Set<SchedulingAlgorithm>(['PRIORITY_NP', 'PRIORITY_P', 'PRIORITY_RR']);
@@ -43,6 +44,114 @@ const ToggleRow = ({
     </button>
   </div>
 );
+
+const MLQ_ALGO_OPTIONS: MlqQueueDef['algorithm'][] = ['RR', 'PRIORITY_NP', 'FCFS'];
+
+const MlqQueuesConfig = ({
+  queues,
+  onChange,
+}: {
+  queues: MlqQueueDef[];
+  onChange: (queues: MlqQueueDef[]) => void;
+}) => {
+  const update = (idx: number, patch: Partial<MlqQueueDef>) => {
+    onChange(queues.map((q, i) => (i === idx ? { ...q, ...patch } : q)));
+  };
+
+  const addQueue = () => {
+    if (queues.length >= 5) return;
+    onChange([...queues, { priorityMin: 1, priorityMax: 10, algorithm: 'FCFS', quantum: 2 }]);
+  };
+
+  const removeQueue = (idx: number) => {
+    if (queues.length <= 1) return;
+    onChange(queues.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div className="space-y-2 pt-1" data-testid="mlq-queues-config">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">Filas MLQ (prioridade decrescente)</span>
+        <button
+          onClick={addQueue}
+          disabled={queues.length >= 5}
+          className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
+          aria-label="Adicionar fila"
+        >
+          <Plus size={11} /> Fila
+        </button>
+      </div>
+      {queues.map((q, idx) => (
+        <div
+          key={idx}
+          className="rounded-md border border-slate-600 bg-slate-800/60 p-2 space-y-1.5"
+          data-testid={`mlq-queue-${idx}`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
+              Fila {idx} {idx === 0 ? '(mais alta)' : idx === queues.length - 1 ? '(mais baixa)' : ''}
+            </span>
+            <button
+              onClick={() => removeQueue(idx)}
+              disabled={queues.length <= 1}
+              className="text-slate-500 hover:text-red-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors"
+              aria-label={`Remover fila ${idx}`}
+            >
+              <Trash2 size={11} />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <div>
+              <label className="block text-[10px] text-slate-500 mb-0.5">Prio. mín</label>
+              <input
+                type="number" min={1} max={10}
+                value={q.priorityMin}
+                onChange={e => update(idx, { priorityMin: Math.min(10, Math.max(1, Number(e.target.value))) })}
+                className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                aria-label={`Fila ${idx}: prioridade mínima`}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] text-slate-500 mb-0.5">Prio. máx</label>
+              <input
+                type="number" min={1} max={10}
+                value={q.priorityMax}
+                onChange={e => update(idx, { priorityMax: Math.min(10, Math.max(1, Number(e.target.value))) })}
+                className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                aria-label={`Fila ${idx}: prioridade máxima`}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[10px] text-slate-500 mb-0.5">Algoritmo</label>
+            <select
+              value={q.algorithm}
+              onChange={e => update(idx, { algorithm: e.target.value as MlqQueueDef['algorithm'] })}
+              className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+              aria-label={`Fila ${idx}: algoritmo`}
+            >
+              {MLQ_ALGO_OPTIONS.map(a => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+          </div>
+          {q.algorithm === 'RR' && (
+            <div>
+              <label className="block text-[10px] text-slate-500 mb-0.5">Quantum</label>
+              <input
+                type="number" min={1}
+                value={q.quantum}
+                onChange={e => update(idx, { quantum: Math.max(1, Number(e.target.value)) })}
+                className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                aria-label={`Fila ${idx}: quantum`}
+              />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const SchedulerConfig = () => {
   const config = useProcessStore(s => s.config);
@@ -132,6 +241,14 @@ const SchedulerConfig = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* MLQ Queue Configuration */}
+      {algo === 'MULTILEVEL' && (
+        <MlqQueuesConfig
+          queues={config.mlqQueues ?? []}
+          onChange={queues => setConfig({ mlqQueues: queues })}
+        />
       )}
     </div>
   );

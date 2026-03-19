@@ -24,7 +24,7 @@ const ProcessCard = ({ process, onEdit, onRemove }: ProcessCardProps) => {
     >
       {/* Color indicator */}
       <div
-        className="mt-0.5 h-8 w-1.5 rounded-full flex-shrink-0"
+        className="mt-0.5 h-8 w-1.5 rounded-full shrink-0"
         style={{ backgroundColor: process.color }}
         aria-hidden="true"
       />
@@ -32,6 +32,11 @@ const ProcessCard = ({ process, onEdit, onRemove }: ProcessCardProps) => {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
+          {process.pid !== undefined && (
+            <span className="text-[11px] font-mono font-semibold text-slate-400 bg-slate-700 px-1.5 py-0.5 rounded shrink-0">
+              #{process.pid}
+            </span>
+          )}
           <span className="font-semibold text-sm text-slate-100 truncate">{process.name}</span>
           <Badge variant={boundVariant}>{bound}</Badge>
         </div>
@@ -47,7 +52,7 @@ const ProcessCard = ({ process, onEdit, onRemove }: ProcessCardProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
         <IconButton
           size="sm"
           variant="ghost"

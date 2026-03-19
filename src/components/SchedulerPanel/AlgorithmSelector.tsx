@@ -10,7 +10,7 @@ const ALGORITHM_OPTIONS: { value: SchedulingAlgorithm; label: string; disabled?:
   { value: 'PRIORITY_P', label: 'Priority (Preemptivo)' },
   { value: 'PRIORITY_RR',label: 'Priority Round Robin (tempo real)' },
   { value: 'HRRN',       label: 'HRRN — Highest Response Ratio Next' },
-  { value: 'MULTILEVEL', label: 'Multilevel Queue (em breve)', disabled: true },
+  { value: 'MULTILEVEL', label: 'Multilevel Queue (MLQ)' },
 ];
 
 const AlgorithmSelector = () => {
