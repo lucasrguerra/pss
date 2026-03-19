@@ -2,5 +2,5 @@ services:
   pss:
     build: .
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3000}:80"
     restart: unless-stopped
