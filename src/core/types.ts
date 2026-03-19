@@ -76,6 +76,7 @@ export interface SimTick {
   readyQueue: string[]; // processIds in ready queue (in queue order)
   states: Record<string, StateLabel>; // all processId → state
   contextSwitching: boolean; // true during context-switch overhead
+  ctxSwitchForProcess: string | null; // incoming processId during ctx-switch overhead (null otherwise)
 }
 
 // --------------- Metrics ------------------------------------

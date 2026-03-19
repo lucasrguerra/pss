@@ -55,7 +55,7 @@ const AppHeader = () => {
   return (
     <header className="h-12 flex items-center px-5 gap-4 bg-slate-900 border-b border-slate-700/60 shrink-0 z-30">
       {/* Title */}
-      <h1 className="text-sm font-semibold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent whitespace-nowrap">
+      <h1 className="text-sm font-semibold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent whitespace-nowrap">
         Process Scheduler Simulator
       </h1>
 
@@ -81,10 +81,11 @@ const AppHeader = () => {
               onClick={() => setPresetsOpen(false)}
             />
             {/* Dropdown */}
-            <div className="absolute right-0 top-full mt-1 w-72 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 overflow-hidden">
-              <div className="px-3 py-2 border-b border-slate-700 text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+            <div className="absolute right-0 top-full mt-1 w-72 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 overflow-hidden flex flex-col max-h-[min(32rem,calc(100vh-4rem))]">
+              <div className="px-3 py-2 border-b border-slate-700 text-[10px] text-slate-400 uppercase tracking-wider font-medium shrink-0">
                 Cenários pré-definidos
               </div>
+              <div className="overflow-y-auto">
               {presets.map((preset, i) => (
                 <button
                   key={preset.name}
@@ -102,6 +103,7 @@ const AppHeader = () => {
                   </div>
                 </button>
               ))}
+              </div>
             </div>
           </>
         )}

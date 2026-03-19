@@ -276,6 +276,25 @@ describe("SimulationEngine general", () => {
     expect(ticks[1]?.cpuProcess).toBe("p1");
     expect(ticks[2]?.contextSwitching).toBe(true);
     expect(ticks[2]?.cpuProcess).toBeNull();
+    expect(ticks[2]?.ctxSwitchForProcess).toBe("p2");
     expect(ticks[3]?.cpuProcess).toBe("p2");
+  });
+
+  it("ctxSwitchForProcess identifies incoming process across all overhead ticks", () => {
+    const engine = new SimulationEngine(
+      [
+        p("p1", 0, [{ type: "cpu", duration: 2 }]),
+        p("p2", 0, [{ type: "cpu", duration: 2 }]),
+      ],
+      cfg({ algorithm: "FCFS", contextSwitchTime: 2 }),
+    );
+    const ticks = engine.runAll();
+    // P1 runs ticks 0-1, ctx-switch ticks 2-3, P2 runs ticks 4-5
+    expect(ticks[2]?.contextSwitching).toBe(true);
+    expect(ticks[2]?.ctxSwitchForProcess).toBe("p2");
+    expect(ticks[3]?.contextSwitching).toBe(true);
+    expect(ticks[3]?.ctxSwitchForProcess).toBe("p2");
+    expect(ticks[4]?.contextSwitching).toBe(false);
+    expect(ticks[4]?.ctxSwitchForProcess).toBeNull();
   });
 });

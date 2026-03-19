@@ -239,6 +239,9 @@ export class SimulationEngine {
       readyQueue: this._readyQueue.map((rt) => rt.processId),
       states,
       contextSwitching,
+      ctxSwitchForProcess: contextSwitching
+        ? (this._readyQueue[0]?.processId ?? null)
+        : null,
     };
   }
 }

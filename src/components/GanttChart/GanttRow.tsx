@@ -21,9 +21,9 @@ const GanttRow = React.memo(function GanttRow({
     <div className="flex" style={{ height: CELL_H }}>
       {ticks.map((tick) => {
         const state: StateLabel = tick.states[process.id] ?? "New";
-        // A context-switch tick affects the process currently on CPU
+        // A context-switch tick is shown on the incoming (next-to-run) process
         const isCtxSwitch =
-          tick.contextSwitching && tick.cpuProcess === process.id;
+          tick.contextSwitching && tick.ctxSwitchForProcess === process.id;
 
         return (
           <GanttCell

@@ -20,6 +20,7 @@ describe("GanttCell", () => {
     readyQueue: [],
     states: { p1: "Running" },
     contextSwitching: false,
+    ctxSwitchForProcess: null,
   };
 
   const noop = () => {};

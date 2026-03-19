@@ -99,6 +99,16 @@ export const presets: Preset[] = [
     config: defaultConfig({ algorithm: "FCFS" }),
   },
   {
+    name: "context_switch_demo",
+    description: "3 processos FCFS com 2 ticks de overhead — veja as células vermelhas de Context Switch",
+    processes: [
+      { id: "p1", name: "P1", arrivalTime: 0, priority: 5, color: "#4FC3F7", bursts: [{ type: "cpu", duration: 3 }] },
+      { id: "p2", name: "P2", arrivalTime: 0, priority: 5, color: "#81C784", bursts: [{ type: "cpu", duration: 3 }] },
+      { id: "p3", name: "P3", arrivalTime: 0, priority: 5, color: "#FFB74D", bursts: [{ type: "cpu", duration: 3 }] },
+    ],
+    config: defaultConfig({ algorithm: "FCFS", contextSwitchTime: 2 }),
+  },
+  {
     name: "multilevel_demo",
     description: "Priority RR with 3 priority tiers — demonstrates multilevel scheduling",
     processes: [
