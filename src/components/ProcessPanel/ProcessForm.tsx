@@ -78,7 +78,7 @@ const ProcessForm = ({ editingProcess, onClose }: ProcessFormProps) => {
     if (bursts.at(-1)?.type !== 'cpu') errs.push('O último burst deve ser CPU');
     bursts.forEach((b, i) => {
       if (b.duration < 1) errs.push(`Burst ${i + 1}: duração deve ser ≥ 1`);
-      if (i > 0 && bursts[i - 1].type === b.type) errs.push(`Bursts ${i} e ${i + 1} não podem ser do mesmo tipo (alternar CPU/IO)`);
+      if (i > 0 && bursts[i - 1]?.type === b.type) errs.push(`Bursts ${i} e ${i + 1} não podem ser do mesmo tipo (alternar CPU/IO)`);
     });
     setErrors(errs);
     return errs.length === 0;

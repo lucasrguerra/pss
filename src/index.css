@@ -17,4 +17,28 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Custom scrollbar for Gantt */
+  .gantt-scrollbar::-webkit-scrollbar {
+    height: 6px;
+  }
+  .gantt-scrollbar::-webkit-scrollbar-track {
+    background: #0f172a; /* slate-900 */
+  }
+  .gantt-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155; /* slate-700 */
+    border-radius: 10px;
+  }
+  .gantt-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569; /* slate-600 */
+  }
+
+  @keyframes gantt-cursor-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .gantt-cursor {
+    animation: gantt-cursor-pulse 2s ease-in-out infinite;
+  }
 }

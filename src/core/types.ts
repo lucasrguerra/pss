@@ -9,6 +9,7 @@ export type SchedulingAlgorithm =
   | "RR"
   | "PRIORITY_NP"
   | "PRIORITY_P"
+  | "PRIORITY_RR"
   | "MULTILEVEL"
   | "HRRN";
 

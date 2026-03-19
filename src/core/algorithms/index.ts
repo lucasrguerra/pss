@@ -3,6 +3,7 @@ import { fcfs } from "./fcfs";
 import { sjfNp, srtf } from "./sjf";
 import { rr } from "./rr";
 import { priorityNp, priorityP } from "./priority";
+import { priorityRr } from "./priority_rr";
 import { hrrn } from "./hrrn";
 import { multilevel } from "./multilevel";
 
@@ -54,6 +55,7 @@ export const algorithms: Record<SchedulingAlgorithm, SchedulerAlgorithm> = {
   RR: rr,
   PRIORITY_NP: priorityNp,
   PRIORITY_P: priorityP,
+  PRIORITY_RR: priorityRr,
   HRRN: hrrn,
   MULTILEVEL: multilevel,
 };

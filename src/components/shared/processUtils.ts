@@ -28,5 +28,5 @@ const PALETTE = [
 ];
 let _paletteIndex = 0;
 export function nextColor(): string {
-  return PALETTE[_paletteIndex++ % PALETTE.length];
+  return PALETTE[_paletteIndex++ % PALETTE.length]!;
 }

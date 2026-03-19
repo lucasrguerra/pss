@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:release": "tsc -b && vite build && tar --dereference -czf dist.tar.gz dist",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -16,6 +17,7 @@
     "lucide-react": "^0.577.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^3.8.0",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.12"
   },

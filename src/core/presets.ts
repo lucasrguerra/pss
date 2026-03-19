@@ -68,6 +68,16 @@ export const presets: Preset[] = [
     config: defaultConfig({ algorithm: "PRIORITY_P", isPreemptive: true, agingEnabled: true, agingInterval: 3 }),
   },
   {
+    name: "priority_rr_demo",
+    description: "Priority RR: P3 (priority 1) preempts mid-run; P1 & P2 (priority 2) share CPU via RR",
+    processes: [
+      { id: "p1", name: "P1", arrivalTime: 0, priority: 2, color: "#4FC3F7", bursts: [{ type: "cpu", duration: 4 }] },
+      { id: "p2", name: "P2", arrivalTime: 0, priority: 2, color: "#81C784", bursts: [{ type: "cpu", duration: 4 }] },
+      { id: "p3", name: "P3", arrivalTime: 4, priority: 1, color: "#F06292", bursts: [{ type: "cpu", duration: 2 }] },
+    ],
+    config: defaultConfig({ algorithm: "PRIORITY_RR", quantum: 2 }),
+  },
+  {
     name: "io_heavy",
     description: "Mixed CPU-bound and I/O-bound processes",
     processes: [
@@ -76,5 +86,28 @@ export const presets: Preset[] = [
       { id: "p3", name: "P3", arrivalTime: 2, priority: 5, color: "#FFB74D", bursts: [{ type: "cpu", duration: 4 }, { type: "io", duration: 2 }, { type: "cpu", duration: 4 }] },
     ],
     config: defaultConfig({ algorithm: "SJF_P", isPreemptive: true }),
+  },
+  {
+    name: "convoy_effect",
+    description: "One long process blocks shorter ones — FCFS convoy vs SJF comparison",
+    processes: [
+      { id: "p1", name: "P1", arrivalTime: 0, priority: 5, color: "#EF5350", bursts: [{ type: "cpu", duration: 12 }] },
+      { id: "p2", name: "P2", arrivalTime: 1, priority: 5, color: "#81C784", bursts: [{ type: "cpu", duration: 2 }] },
+      { id: "p3", name: "P3", arrivalTime: 2, priority: 5, color: "#FFB74D", bursts: [{ type: "cpu", duration: 1 }] },
+      { id: "p4", name: "P4", arrivalTime: 3, priority: 5, color: "#CE93D8", bursts: [{ type: "cpu", duration: 3 }] },
+    ],
+    config: defaultConfig({ algorithm: "FCFS" }),
+  },
+  {
+    name: "multilevel_demo",
+    description: "Priority RR with 3 priority tiers — demonstrates multilevel scheduling",
+    processes: [
+      { id: "p1", name: "P1", arrivalTime: 0, priority: 1, color: "#EF5350", bursts: [{ type: "cpu", duration: 4 }] },
+      { id: "p2", name: "P2", arrivalTime: 0, priority: 1, color: "#FF8A65", bursts: [{ type: "cpu", duration: 3 }] },
+      { id: "p3", name: "P3", arrivalTime: 2, priority: 2, color: "#81C784", bursts: [{ type: "cpu", duration: 5 }] },
+      { id: "p4", name: "P4", arrivalTime: 2, priority: 2, color: "#4FC3F7", bursts: [{ type: "cpu", duration: 2 }] },
+      { id: "p5", name: "P5", arrivalTime: 4, priority: 3, color: "#CE93D8", bursts: [{ type: "cpu", duration: 6 }] },
+    ],
+    config: defaultConfig({ algorithm: "PRIORITY_RR", quantum: 2 }),
   },
 ];

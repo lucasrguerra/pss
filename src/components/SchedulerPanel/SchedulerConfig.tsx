@@ -2,13 +2,13 @@ import { useProcessStore } from '../../store/processStore';
 import type { SchedulingAlgorithm } from '@core/types';
 
 // Algorithms that require a quantum parameter
-const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'MULTILEVEL']);
+const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'PRIORITY_RR', 'MULTILEVEL']);
 
 // Algorithms where aging (anti-starvation) is applicable
-const AGING_ALGORITHMS = new Set<SchedulingAlgorithm>(['PRIORITY_NP', 'PRIORITY_P']);
+const AGING_ALGORITHMS = new Set<SchedulingAlgorithm>(['PRIORITY_NP', 'PRIORITY_P', 'PRIORITY_RR']);
 
 // Algorithms that are preemptive by definition (used for read-only info only)
-const PREEMPTIVE_BY_DESIGN = new Set<SchedulingAlgorithm>(['SJF_P', 'RR', 'PRIORITY_P', 'MULTILEVEL']);
+const PREEMPTIVE_BY_DESIGN = new Set<SchedulingAlgorithm>(['SJF_P', 'RR', 'PRIORITY_P', 'PRIORITY_RR', 'MULTILEVEL']);
 
 const inputCls = 'w-full rounded-md bg-slate-700 border border-slate-600 text-slate-200 text-sm px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500';
 const labelCls = 'block text-xs text-slate-400 mb-1';

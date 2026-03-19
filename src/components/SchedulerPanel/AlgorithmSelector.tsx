@@ -1,15 +1,16 @@
 import type { SchedulingAlgorithm } from '@core/types';
 import { useProcessStore } from '../../store/processStore';
 
-const ALGORITHM_OPTIONS: { value: SchedulingAlgorithm; label: string }[] = [
+const ALGORITHM_OPTIONS: { value: SchedulingAlgorithm; label: string; disabled?: boolean }[] = [
   { value: 'FCFS',        label: 'FCFS — First Come First Served' },
   { value: 'SJF_NP',     label: 'SJF — Shortest Job First (NP)' },
   { value: 'SJF_P',      label: 'SRTF — Shortest Remaining Time (P)' },
   { value: 'RR',         label: 'RR — Round Robin' },
   { value: 'PRIORITY_NP',label: 'Priority (Não-preemptivo)' },
   { value: 'PRIORITY_P', label: 'Priority (Preemptivo)' },
+  { value: 'PRIORITY_RR',label: 'Priority Round Robin (tempo real)' },
   { value: 'HRRN',       label: 'HRRN — Highest Response Ratio Next' },
-  { value: 'MULTILEVEL', label: 'Multilevel Queue' },
+  { value: 'MULTILEVEL', label: 'Multilevel Queue (em breve)', disabled: true },
 ];
 
 const AlgorithmSelector = () => {
@@ -32,7 +33,7 @@ const AlgorithmSelector = () => {
         aria-label="Selecionar algoritmo de escalonamento"
       >
         {ALGORITHM_OPTIONS.map(opt => (
-          <option key={opt.value} value={opt.value}>
+          <option key={opt.value} value={opt.value} disabled={opt.disabled}>
             {opt.label}
           </option>
         ))}

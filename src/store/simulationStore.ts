@@ -64,6 +64,8 @@ export const useSimulationStore = create<SimulationStore>()((set, get) => ({
     const { _processes, _config } = get();
     if (_processes.length === 0 || _config === null) return;
     const engine = new SimulationEngine(_processes, _config);
-    set({ engine, ticks: [], status: "paused" });
+    // Return to "idle" so the next Play/Step re-runs init() with the
+    // current processStore config (picks up algorithm changes, etc.)
+    set({ engine, ticks: [], status: "idle" });
   },
 }));
