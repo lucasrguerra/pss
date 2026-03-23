@@ -7,6 +7,11 @@ date-released: "2026-03-23"
 license: MIT
 url: "https://pss.lucasrguerra.dev.br"
 repository-code: "https://github.com/lucasrguerra/pss"
+doi: "10.5281/zenodo.19197235"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19197235"
+    description: "Zenodo archive of PSS v1.2.0"
 authors:
   - family-names: Guerra
     given-names: Lucas Rayan
