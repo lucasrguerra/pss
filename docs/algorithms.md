@@ -1,5 +1,7 @@
 # 📐 Algoritmos de Escalonamento
 
+*Also available in: [🇺🇸 English](./algorithms.en.md)*
+
 Este documento descreve em detalhes os algoritmos de escalonamento implementados no PSS. Para cada algoritmo são apresentados o princípio de funcionamento, parâmetros, regras de desempate e exemplos didáticos.
 
 ---

@@ -1,5 +1,7 @@
 # 📏 Métricas
 
+*Also available in: [🇺🇸 English](./metrics.en.md)*
+
 O PSS calcula automaticamente um conjunto de métricas ao final (ou durante) a simulação. Este documento explica cada métrica, sua fórmula, o que ela representa e como lê-la nos gráficos.
 
 ---

@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Tested_with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
-[![License: ISC](https://img.shields.io/badge/License-ISC-yellow.svg)](https://opensource.org/licenses/ISC)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -189,6 +189,9 @@ Os testes cobrem a engine de simulação, todos os algoritmos de escalonamento, 
 
 - [📐 Algoritmos de Escalonamento](./docs/algorithms.md) — descrição detalhada de cada algoritmo, regras de desempate e exemplos
 - [📏 Métricas](./docs/metrics.md) — fórmulas e definições de todas as métricas calculadas
+- [📝 JOSS Paper](./paper.md) — artigo científico submetido ao Journal of Open Source Software
+
+*Also available in: [🇺🇸 English](./README.en.md)*
 
 ---
 
@@ -200,4 +203,4 @@ Contribuições são bem-vindas! Sinta-se livre para abrir uma [issue](https://g
 
 ## 📜 Licença
 
-Distribuído sob a [Licença ISC](./LICENSE). Desenvolvido por [Lucas Rayan Guerra](https://github.com/lucasrguerra).
+Distribuído sob a [Licença MIT](./LICENSE). Desenvolvido por [Lucas Rayan Guerra](https://github.com/lucasrguerra).

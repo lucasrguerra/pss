@@ -1,6 +1,6 @@
 {
   "name": "pss",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "O Process Scheduler Simulator é uma ferramenta educacional interativa que roda inteiramente no navegador",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,7 @@
   },
   "keywords": [],
   "author": "Lucas Rayan Guerra",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/lucasrguerra/pss/issues"
