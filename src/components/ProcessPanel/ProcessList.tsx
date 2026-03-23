@@ -47,13 +47,13 @@ const ProcessList = ({ onEditProcess, onAddNew }: ProcessListProps) => {
       {/* List header */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-slate-400">
-          {processes.length}/{MAX_PROCESSES} processos
+          {processes.length}/{MAX_PROCESSES} processes
         </span>
         <div className="flex gap-1">
           <IconButton
             size="sm"
             variant="ghost"
-            label="Gerar processo aleatório"
+            label="Generate random process"
             onClick={handleRandomize}
             disabled={!canAdd}
           >
@@ -62,7 +62,7 @@ const ProcessList = ({ onEditProcess, onAddNew }: ProcessListProps) => {
           <IconButton
             size="sm"
             variant="ghost"
-            label="Limpar todos os processos"
+            label="Clear all processes"
             onClick={clearProcesses}
             disabled={processes.length === 0}
             className="hover:text-red-400 hover:bg-red-900/20"
@@ -76,8 +76,8 @@ const ProcessList = ({ onEditProcess, onAddNew }: ProcessListProps) => {
       <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5 scrollbar-hide">
         {processes.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 text-slate-500 text-sm py-8 border border-dashed border-slate-700 rounded-lg">
-            <span>Nenhum processo adicionado</span>
-            <span className="text-xs">Clique em + para criar</span>
+            <span>No processes added</span>
+            <span className="text-xs">Click + to create</span>
           </div>
         ) : (
           processes.map(p => (
@@ -95,11 +95,11 @@ const ProcessList = ({ onEditProcess, onAddNew }: ProcessListProps) => {
       {canAdd && (
         <button
           onClick={onAddNew}
-          aria-label="Adicionar novo processo"
+          aria-label="Add new process"
           className="mt-2 w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed border-slate-600 text-slate-500 hover:border-blue-500 hover:text-blue-400 text-xs transition-colors"
         >
           <Plus size={14} />
-          Adicionar Processo
+          Add Process
         </button>
       )}
     </div>

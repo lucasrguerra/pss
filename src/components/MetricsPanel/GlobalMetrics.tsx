@@ -70,7 +70,7 @@ const GlobalMetrics = ({ metrics }: GlobalMetricsProps) => {
         <MetricCard
           label="Avg Response Time"
           value={avgResponseTime.toFixed(2)}
-          sub="unidades de tempo"
+          sub="time units"
           accentColor="#f59e0b"
           accentClass="text-amber-300"
           icon={<Clock size={13} />}
@@ -79,7 +79,7 @@ const GlobalMetrics = ({ metrics }: GlobalMetricsProps) => {
         <MetricCard
           label="Avg Turnaround Time"
           value={avgTurnaroundTime.toFixed(2)}
-          sub="unidades de tempo"
+          sub="time units"
           accentColor="#60a5fa"
           accentClass="text-blue-300"
           icon={<Timer size={13} />}
@@ -88,7 +88,7 @@ const GlobalMetrics = ({ metrics }: GlobalMetricsProps) => {
         <MetricCard
           label="Avg Waiting Time"
           value={avgWaitingTime.toFixed(2)}
-          sub="unidades de tempo"
+          sub="time units"
           accentColor="#fb923c"
           accentClass="text-orange-300"
           icon={<Hourglass size={13} />}
@@ -97,7 +97,7 @@ const GlobalMetrics = ({ metrics }: GlobalMetricsProps) => {
         <MetricCard
           label="CPU Throughput"
           value={cpuThroughput.toFixed(3)}
-          sub="processos / u.t."
+          sub="processes / t.u."
           accentColor="#34d399"
           accentClass="text-emerald-300"
           icon={<Zap size={13} />}
@@ -120,7 +120,7 @@ const GlobalMetrics = ({ metrics }: GlobalMetricsProps) => {
           <span className="text-2xl font-bold font-mono leading-none text-violet-300">
             {utilizationPct.toFixed(1)}%
           </span>
-          <span className="text-[10px] text-slate-500">do tempo total em CPU</span>
+          <span className="text-[10px] text-slate-500">of total CPU time</span>
           <div className="mt-1 h-2 w-full bg-slate-700 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"

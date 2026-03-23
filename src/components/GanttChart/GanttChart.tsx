@@ -27,7 +27,7 @@ const GanttChart = () => {
     return (
       <div className="border-b border-slate-800 flex items-center justify-center text-slate-600 bg-slate-900/50 text-sm select-none"
            style={{ minHeight: 80 }}>
-        Inicie a simulação para ver o diagrama de Gantt
+        Start the simulation to see the Gantt chart
       </div>
     );
   }

@@ -8,12 +8,12 @@ import MetricsTable from './MetricsTable';
 import GlobalMetrics from './GlobalMetrics';
 import MetricsChart from './MetricsChart';
 
-type Tab = 'table' | 'global' | 'chart';
+type Tab = 'table' | 'global' | 'charts';
 
 const TAB_CONFIG: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'table', label: 'Por Processo', icon: <Table size={13} /> },
+  { id: 'table', label: 'Per Process', icon: <Table size={13} /> },
   { id: 'global', label: 'Global', icon: <Globe size={13} /> },
-  { id: 'chart', label: 'Gráfico', icon: <BarChart2 size={13} /> },
+  { id: 'charts', label: 'Charts', icon: <BarChart2 size={13} /> },
 ];
 
 const MetricsPanel = () => {
@@ -31,7 +31,7 @@ const MetricsPanel = () => {
   if (!hasData) {
     return (
       <div className="border-t border-slate-700 bg-slate-950 flex items-center justify-center h-32 text-slate-600 text-sm shrink-0">
-        Execute a simulação para ver as métricas.
+        Run the simulation to see metrics.
       </div>
     );
   }
@@ -46,7 +46,7 @@ const MetricsPanel = () => {
   const canExportCSV = status === 'finished' && processMetrics.length > 0;
 
   return (
-    <div className="border-t border-slate-700 bg-slate-950 flex flex-col shrink-0" style={{ height: '340px' }}>
+    <div className="border-t border-slate-700 bg-slate-950 flex flex-col shrink-0" style={{ height: '600px' }}>
       {/* Panel header with tabs + export button */}
       <div className="flex items-center px-3 border-b border-slate-700 shrink-0 h-10 gap-1">
         {TAB_CONFIG.map(tab => (
@@ -69,9 +69,9 @@ const MetricsPanel = () => {
           <button
             onClick={() => exportCSV(processMetrics, processMap)}
             disabled={!canExportCSV}
-            title={!canExportCSV ? 'Disponível ao concluir a simulação' : 'Exportar métricas como CSV'}
+            title={!canExportCSV ? 'Available when simulation completes' : 'Export metrics as CSV'}
             className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 px-2.5 py-1 rounded-md hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            aria-label="Exportar métricas CSV"
+            aria-label="Export metrics as CSV"
           >
             <Download size={12} />
             CSV
@@ -87,7 +87,7 @@ const MetricsPanel = () => {
         {activeTab === 'global' && (
           <GlobalMetrics metrics={globalMetrics} />
         )}
-        {activeTab === 'chart' && (
+        {activeTab === 'charts' && (
           <MetricsChart metrics={processMetrics} processMap={processMap} />
         )}
       </div>

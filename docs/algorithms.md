@@ -15,13 +15,13 @@ Este documento descreve em detalhes os algoritmos de escalonamento implementados
 
 ---
 
-## FCFS — First Come, First Served
+## FCFS (First Come, First Served)
 
 **Tipo:** Não-preemptivo
 
 ### Como funciona
 
-Talvez o algoritmo mais intuitivo: o processo que chegou primeiro é atendido primeiro. A fila Ready é ordenada por `arrivalTime`. Quando um processo ocupa a CPU, ele permanece lá até completar seu burst de CPU atual — sem interrupções.
+Talvez o algoritmo mais intuitivo: o processo que chegou primeiro é atendido primeiro. A fila Ready é ordenada por `arrivalTime`. Quando um processo ocupa a CPU, ele permanece lá até completar seu burst de CPU atual, sem interrupções.
 
 ### Exemplo
 
@@ -42,11 +42,11 @@ Tick:    0  1  2  3    4  5  6    7
 
 ### Observação: Efeito de Comboio
 
-Se um processo longo chega antes de vários processos curtos, estes ficam esperando por muito tempo — mesmo que a CPU esteja "disponível" para eles. Este fenômeno é chamado de **Convoy Effect** e é um dos principais problemas do FCFS. Experimente o preset `convoy_effect` para visualizá-lo.
+Se um processo longo chega antes de vários processos curtos, estes ficam esperando por muito tempo, mesmo que a CPU esteja "disponível" para eles. Este fenômeno é chamado de **Convoy Effect** e é um dos principais problemas do FCFS. Experimente o preset `convoy_effect` para visualizá-lo.
 
 ---
 
-## SJF — Shortest Job First (Não-Preemptivo)
+## SJF (Shortest Job First - Não-Preemptivo)
 
 **Tipo:** Não-preemptivo
 
@@ -62,7 +62,7 @@ Nenhum parâmetro adicional.
 
 ---
 
-## SRTF — Shortest Remaining Time First (SJF Preemptivo)
+## SRTF (Shortest Remaining Time First - SJF Preemptivo)
 
 **Tipo:** Preemptivo
 
@@ -93,7 +93,7 @@ Tick 12: P1 termina
 
 A fila Ready é tratada como uma fila circular. Cada processo recebe no máximo `quantum` ticks de CPU consecutivos. Se ao final do quantum o processo ainda tiver burst restante, ele retorna ao **fim** da fila Ready e aguarda sua vez.
 
-I/O bursts **não** consomem quantum — o processo sai voluntariamente da CPU quando inicia I/O.
+I/O bursts **não** consomem quantum, pois o processo sai voluntariamente da CPU quando inicia I/O.
 
 ### Tradeoff
 
@@ -123,7 +123,7 @@ Experimente os presets `starvation` e `aging_fix` para ver esta diferença.
 
 ---
 
-## HRRN — Highest Response Ratio Next
+## HRRN (Highest Response Ratio Next)
 
 **Tipo:** Não-preemptivo
 
@@ -152,7 +152,7 @@ O processo com o **maior ratio** é selecionado. Isso faz com que processos que 
 
 ### Como funciona
 
-Os processos são distribuídos em múltiplas filas com diferentes prioridades. Cada fila tem seu próprio quantum de Round Robin. Filas de maior prioridade sempre são servidas primeiro — uma fila de menor prioridade só recebe CPU se todas as filas acima dela estiverem vazias.
+Os processos são distribuídos em múltiplas filas com diferentes prioridades. Cada fila tem seu próprio quantum de Round Robin. Filas de maior prioridade sempre são servidas primeiro. Uma fila de menor prioridade só recebe CPU se todas as filas acima dela estiverem vazias.
 
 Isso permite tratar diferentes classes de processos de forma distinta: por exemplo, processos interativos em filas de alta prioridade (quantum pequeno) e processos batch em filas de baixa prioridade (quantum maior).
 
@@ -160,5 +160,5 @@ Isso permite tratar diferentes classes de processos de forma distinta: por exemp
 
 ## Referências
 
-- Silberschatz, A., Galvin, P. B., & Gagne, G. — *Operating System Concepts*, 10ª edição
-- Tanenbaum, A. S. — *Modern Operating Systems*, 4ª edição
+- Silberschatz, A., Galvin, P. B., & Gagne, G., *Operating System Concepts*, 10ª edição.
+- Tanenbaum, A. S., *Modern Operating Systems*, 4ª edição.

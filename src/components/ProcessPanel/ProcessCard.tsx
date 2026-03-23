@@ -56,7 +56,7 @@ const ProcessCard = ({ process, onEdit, onRemove }: ProcessCardProps) => {
         <IconButton
           size="sm"
           variant="ghost"
-          label={`Editar ${process.name}`}
+          label={`Edit ${process.name}`}
           onClick={() => onEdit(process)}
         >
           <Pencil size={13} />
@@ -64,7 +64,7 @@ const ProcessCard = ({ process, onEdit, onRemove }: ProcessCardProps) => {
         <IconButton
           size="sm"
           variant="ghost"
-          label={`Remover ${process.name}`}
+          label={`Remove ${process.name}`}
           onClick={() => onRemove(process.id)}
           className="hover:text-red-400 hover:bg-red-900/20"
         >

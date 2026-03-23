@@ -15,10 +15,10 @@ const SPEED_LABELS: Record<number, string> = {
 };
 
 const statusLabel: Record<SimStatus, string> = {
-  idle: 'Pronto',
-  paused: 'Pausado',
-  running: 'Executando',
-  finished: 'Concluído',
+  idle: 'Ready',
+  paused: 'Paused',
+  running: 'Running',
+  finished: 'Finished',
 };
 
 const statusDotClass: Record<SimStatus, string> = {
@@ -68,7 +68,7 @@ const ControlBar = () => {
     <div
       className="h-16 flex items-center px-5 gap-3 bg-slate-800 border-b border-slate-700 shadow-sm"
       role="toolbar"
-      aria-label="Controles da simulação"
+      aria-label="Simulation controls"
     >
       {/* Left group: simulation controls */}
       <div className="flex items-center gap-1.5">
@@ -85,7 +85,7 @@ const ControlBar = () => {
 
         {/* Step */}
         <IconButton
-          label="Avançar 1 tick (Step)"
+          label="Advance 1 tick (Step)"
           variant="default"
           onClick={handleStep}
           disabled={isFinished || processes.length === 0 || isRunning}
@@ -97,7 +97,7 @@ const ControlBar = () => {
         {/* Play / Pause */}
         {isRunning ? (
           <IconButton
-            label="Pausar simulação"
+            label="Pause simulation"
             variant="primary"
             onClick={pause}
             data-testid="btn-pause"
@@ -106,7 +106,7 @@ const ControlBar = () => {
           </IconButton>
         ) : (
           <IconButton
-            label="Iniciar / Retomar simulação"
+            label="Start / Resume simulation"
             variant="primary"
             onClick={handlePlay}
             disabled={!canPlay && !isRunning}
@@ -124,7 +124,7 @@ const ControlBar = () => {
       <div
         className="flex items-center gap-2 px-3 py-1 rounded-md bg-slate-900 border border-slate-700"
         aria-live="polite"
-        aria-label={`Tick atual: ${currentTick}`}
+        aria-label={`Current tick: ${currentTick}`}
       >
         <span className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">Tick</span>
         <span
@@ -145,14 +145,14 @@ const ControlBar = () => {
       <div className="ml-auto flex items-center gap-2">
         <SkipBack size={14} className="text-slate-500" aria-hidden="true" />
         <label htmlFor="speed-select" className="text-xs text-slate-400 sr-only">
-          Velocidade
+          Speed
         </label>
         <select
           id="speed-select"
           value={speed}
           onChange={e => setSpeed(Number(e.target.value))}
           className="rounded-md bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-          aria-label="Velocidade de simulação"
+          aria-label="Simulation speed"
           data-testid="speed-select"
         >
           {SPEED_OPTIONS.map(s => (

@@ -22,7 +22,7 @@ interface MiniBarProps {
 const MiniBar = ({ value, max, color }: MiniBarProps) => {
   const pct = max > 0 ? (value / max) * 100 : 0;
   return (
-    <div className="relative flex items-center justify-end gap-1.5 min-w-[52px]">
+    <div className="relative flex items-center justify-end gap-1.5 min-w-13">
       <div
         className="absolute inset-y-0 right-0 rounded-sm opacity-20 transition-all duration-300"
         style={{ width: `${pct}%`, backgroundColor: color }}
@@ -36,7 +36,7 @@ const MetricsTable = ({ metrics, processMap }: MetricsTableProps) => {
   if (metrics.length === 0) {
     return (
       <div className="flex items-center justify-center h-32 text-slate-500 text-sm">
-        Nenhum processo concluído ainda.
+        No completed processes yet.
       </div>
     );
   }
@@ -50,10 +50,10 @@ const MetricsTable = ({ metrics, processMap }: MetricsTableProps) => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-xs text-slate-300 border-collapse min-w-[780px]">
+      <table className="w-full text-xs text-slate-300 border-collapse min-w-195">
         <thead>
           <tr className="text-[10px] text-slate-400 uppercase tracking-wider border-b border-slate-700 sticky top-0 bg-slate-950 z-10">
-            <th className="text-left px-3 py-2 font-medium">Processo</th>
+            <th className="text-left px-3 py-2 font-medium">Process</th>
             <th className="text-right px-3 py-2 font-medium">Arrival</th>
             <th className="text-right px-3 py-2 font-medium">Start</th>
             <th className="text-right px-3 py-2 font-medium">Finish</th>

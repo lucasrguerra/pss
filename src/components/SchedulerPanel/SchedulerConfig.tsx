@@ -71,14 +71,14 @@ const MlqQueuesConfig = ({
   return (
     <div className="space-y-2 pt-1" data-testid="mlq-queues-config">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-400 font-medium">Filas MLQ (prioridade decrescente)</span>
+        <span className="text-xs text-slate-400 font-medium">MLQ Queues (decreasing priority)</span>
         <button
           onClick={addQueue}
           disabled={queues.length >= 5}
           className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
-          aria-label="Adicionar fila"
+          aria-label="Add queue"
         >
-          <Plus size={11} /> Fila
+          <Plus size={11} /> Queue
         </button>
       </div>
       {queues.map((q, idx) => (
@@ -89,46 +89,46 @@ const MlqQueuesConfig = ({
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
-              Fila {idx} {idx === 0 ? '(mais alta)' : idx === queues.length - 1 ? '(mais baixa)' : ''}
+              Queue {idx} {idx === 0 ? '(highest)' : idx === queues.length - 1 ? '(lowest)' : ''}
             </span>
             <button
               onClick={() => removeQueue(idx)}
               disabled={queues.length <= 1}
               className="text-slate-500 hover:text-red-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors"
-              aria-label={`Remover fila ${idx}`}
+              aria-label={`Remove queue ${idx}`}
             >
               <Trash2 size={11} />
             </button>
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             <div>
-              <label className="block text-[10px] text-slate-500 mb-0.5">Prio. mín</label>
+              <label className="block text-[10px] text-slate-500 mb-0.5">Min. Prio</label>
               <input
                 type="number" min={1} max={10}
                 value={q.priorityMin}
                 onChange={e => update(idx, { priorityMin: Math.min(10, Math.max(1, Number(e.target.value))) })}
                 className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                aria-label={`Fila ${idx}: prioridade mínima`}
+                aria-label={`Queue ${idx}: minimum priority`}
               />
             </div>
             <div>
-              <label className="block text-[10px] text-slate-500 mb-0.5">Prio. máx</label>
+              <label className="block text-[10px] text-slate-500 mb-0.5">Max. Prio</label>
               <input
                 type="number" min={1} max={10}
                 value={q.priorityMax}
                 onChange={e => update(idx, { priorityMax: Math.min(10, Math.max(1, Number(e.target.value))) })}
                 className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                aria-label={`Fila ${idx}: prioridade máxima`}
+                aria-label={`Queue ${idx}: maximum priority`}
               />
             </div>
           </div>
           <div>
-            <label className="block text-[10px] text-slate-500 mb-0.5">Algoritmo</label>
+            <label className="block text-[10px] text-slate-500 mb-0.5">Algorithm</label>
             <select
               value={q.algorithm}
               onChange={e => update(idx, { algorithm: e.target.value as MlqQueueDef['algorithm'] })}
               className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-              aria-label={`Fila ${idx}: algoritmo`}
+              aria-label={`Queue ${idx}: algorithm`}
             >
               {MLQ_ALGO_OPTIONS.map(a => (
                 <option key={a} value={a}>{a}</option>
@@ -167,7 +167,7 @@ const SchedulerConfig = () => {
 
       {/* Read-only preemptive indicator */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-400">Tipo de escalonamento</span>
+        <span className="text-xs text-slate-400">Scheduling type</span>
         <span
           className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded border ${
             isPreemptive
@@ -176,7 +176,7 @@ const SchedulerConfig = () => {
           }`}
           data-testid="preemptive-badge"
         >
-          {isPreemptive ? 'Preemptivo' : 'Não-preemptivo'}
+          {isPreemptive ? 'Preemptive' : 'Non-preemptive'}
         </span>
       </div>
 
@@ -193,7 +193,7 @@ const SchedulerConfig = () => {
           value={config.contextSwitchTime}
           onChange={e => setConfig({ contextSwitchTime: Math.min(10, Math.max(0, Number(e.target.value))) })}
           className={inputCls}
-          aria-label="Tempo de context switch"
+          aria-label="Context switch time"
         />
       </div>
 
@@ -210,7 +210,7 @@ const SchedulerConfig = () => {
             value={config.quantum}
             onChange={e => setConfig({ quantum: Math.max(1, Number(e.target.value)) })}
             className={inputCls}
-            aria-label="Quantum do Round Robin"
+            aria-label="Round Robin quantum"
           />
         </div>
       )}
@@ -227,7 +227,7 @@ const SchedulerConfig = () => {
           {config.agingEnabled && (
             <div data-testid="aging-interval-field">
               <label htmlFor="aging-interval" className={labelCls}>
-                Intervalo de Aging (ticks)
+                Aging Interval (ticks)
               </label>
               <input
                 id="aging-interval"
@@ -236,7 +236,7 @@ const SchedulerConfig = () => {
                 value={config.agingInterval}
                 onChange={e => setConfig({ agingInterval: Math.max(1, Number(e.target.value)) })}
                 className={inputCls}
-                aria-label="Intervalo de aging"
+                aria-label="Aging interval"
               />
             </div>
           )}

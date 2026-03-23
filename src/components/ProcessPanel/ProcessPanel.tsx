@@ -24,10 +24,10 @@ const ProcessPanel = () => {
   };
 
   return (
-    <section aria-label="Painel de Processos">
+    <section aria-label="Processes Panel">
       <div className="flex items-center gap-2 mb-3 text-slate-300">
         <ListTree size={18} className="text-blue-400" />
-        <h2 className="font-semibold uppercase text-xs tracking-wider">Processos</h2>
+        <h2 className="font-semibold uppercase text-xs tracking-wider">Processes</h2>
       </div>
 
       {showForm ? (

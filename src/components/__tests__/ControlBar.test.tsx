@@ -38,9 +38,9 @@ describe('ControlBar', () => {
     expect(screen.getByTestId('tick-display')).toHaveTextContent('0000');
   });
 
-  it('shows "Pronto" status when idle', () => {
+  it('shows "Ready" status when idle', () => {
     render(<ControlBar />);
-    expect(screen.getByText('Pronto')).toBeInTheDocument();
+    expect(screen.getByText('Ready')).toBeInTheDocument();
   });
 
   it('Play button is disabled when no processes are loaded', () => {

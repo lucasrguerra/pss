@@ -15,13 +15,13 @@ This document describes in detail the scheduling algorithms implemented in PSS. 
 
 ---
 
-## FCFS — First Come, First Served
+## FCFS (First Come, First Served)
 
 **Type:** Non-preemptive
 
 ### How it works
 
-Perhaps the most intuitive algorithm: the process that arrived first is served first. The Ready queue is sorted by `arrivalTime`. Once a process occupies the CPU, it stays there until its current CPU burst is complete — no interruptions.
+Perhaps the most intuitive algorithm: the process that arrived first is served first. The Ready queue is sorted by `arrivalTime`. Once a process occupies the CPU, it stays there until its current CPU burst is complete, with no interruptions.
 
 ### Example
 
@@ -42,11 +42,11 @@ Tick:    0  1  2  3    4  5  6    7
 
 ### Note: Convoy Effect
 
-If a long process arrives before several short ones, the short ones wait a long time — even though the CPU could be serving them. This phenomenon is called the **Convoy Effect** and is one of the main drawbacks of FCFS. Try the `convoy_effect` preset to visualize it.
+If a long process arrives before several short ones, the short ones wait a long time, even though the CPU could be serving them. This phenomenon is called the **Convoy Effect** and is one of the main drawbacks of FCFS. Try the `convoy_effect` preset to visualize it.
 
 ---
 
-## SJF — Shortest Job First (Non-Preemptive)
+## SJF (Shortest Job First - Non-Preemptive)
 
 **Type:** Non-preemptive
 
@@ -62,7 +62,7 @@ No additional parameters.
 
 ---
 
-## SRTF — Shortest Remaining Time First (Preemptive SJF)
+## SRTF (Shortest Remaining Time First - Preemptive SJF)
 
 **Type:** Preemptive
 
@@ -93,7 +93,7 @@ Tick 12: P1 finishes
 
 The Ready queue is treated as a circular queue. Each process receives at most `quantum` consecutive CPU ticks. If the process still has remaining burst at the end of the quantum, it goes back to the **end** of the Ready queue and waits its turn.
 
-I/O bursts **do not** consume quantum — the process voluntarily leaves the CPU when initiating I/O.
+I/O bursts **do not** consume quantum, as the process voluntarily leaves the CPU when initiating I/O.
 
 ### Trade-off
 
@@ -123,7 +123,7 @@ Try the `starvation` and `aging_fix` presets to see this difference.
 
 ---
 
-## HRRN — Highest Response Ratio Next
+## HRRN (Highest Response Ratio Next)
 
 **Type:** Non-preemptive
 
@@ -152,7 +152,7 @@ The process with the **highest ratio** is selected. This naturally increases the
 
 ### How it works
 
-Processes are distributed across multiple queues with different priorities. Each queue has its own Round Robin quantum. Higher-priority queues are always served first — a lower-priority queue only receives CPU if all queues above it are empty.
+Processes are distributed across multiple queues with different priorities. Each queue has its own Round Robin quantum. Higher-priority queues are always served first. A lower-priority queue only receives CPU if all queues above it are empty.
 
 This allows different classes of processes to be treated distinctly: for example, interactive processes in high-priority queues (small quantum) and batch processes in low-priority queues (larger quantum).
 
@@ -160,5 +160,5 @@ This allows different classes of processes to be treated distinctly: for example
 
 ## References
 
-- Silberschatz, A., Galvin, P. B., & Gagne, G. — *Operating System Concepts*, 10th edition
-- Tanenbaum, A. S. — *Modern Operating Systems*, 4th edition
+- Silberschatz, A., Galvin, P. B., & Gagne, G., *Operating System Concepts*, 10th edition.
+- Tanenbaum, A. S., *Modern Operating Systems*, 4th edition.

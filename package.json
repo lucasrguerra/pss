@@ -1,7 +1,7 @@
 {
   "name": "pss",
-  "version": "1.1.0",
-  "description": "O Process Scheduler Simulator é uma ferramenta educacional interativa que roda inteiramente no navegador",
+  "version": "1.2.0",
+  "description": "Process Scheduler Simulator — an interactive educational tool that runs entirely in the browser",
   "main": "index.js",
   "scripts": {
     "dev": "vite",

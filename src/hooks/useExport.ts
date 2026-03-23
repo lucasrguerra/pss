@@ -18,7 +18,9 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
 export function useExport() {
   const exportCSV = (metrics: ProcessMetrics[], processMap: ProcessMap) => {
     const headers = [
-      "Processo",
+      "PID",
+      "Process",
+      "Priority",
       "Arrival",
       "Start",
       "Finish",
@@ -32,9 +34,14 @@ export function useExport() {
     ];
 
     const rows = metrics.map((m) => {
-      const name = processMap[m.processId]?.name ?? m.processId;
+      const proc = processMap[m.processId];
+      const pid = proc?.pid ?? "";
+      const name = proc?.name ?? m.processId;
+      const priority = proc?.priority ?? "";
       return [
+        pid,
         name,
+        priority,
         m.arrivalTime,
         m.startTick,
         m.finishTick,

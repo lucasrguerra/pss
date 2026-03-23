@@ -26,7 +26,7 @@ beforeEach(() => {
 describe('SchedulerConfig', () => {
   it('always shows Context Switch field regardless of algorithm', () => {
     render(<SchedulerConfig />);
-    expect(screen.getByLabelText('Tempo de context switch')).toBeInTheDocument();
+    expect(screen.getByLabelText('Context switch time')).toBeInTheDocument();
   });
 
   it('always shows read-only preemptive badge', () => {
@@ -34,23 +34,23 @@ describe('SchedulerConfig', () => {
     expect(screen.getByTestId('preemptive-badge')).toBeInTheDocument();
   });
 
-  it('badge shows "Não-preemptivo" for FCFS', () => {
+  it('badge shows "Non-preemptive" for FCFS', () => {
     render(<SchedulerConfig />);
-    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Não-preemptivo');
+    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Non-preemptive');
   });
 
-  it('badge shows "Preemptivo" for SJF_P (SRTF)', () => {
+  it('badge shows "Preemptive" for SJF_P (SRTF)', () => {
     setAlgorithm('SJF_P');
     render(<SchedulerConfig />);
-    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Preemptivo');
+    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Preemptive');
   });
 
-  it('badge shows "Não-preemptivo" for SJF_NP (preemptive toggle no longer exists)', () => {
+  it('badge shows "Non-preemptive" for SJF_NP (preemptive toggle no longer exists)', () => {
     setAlgorithm('SJF_NP');
     render(<SchedulerConfig />);
-    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Não-preemptivo');
+    expect(screen.getByTestId('preemptive-badge')).toHaveTextContent('Non-preemptive');
     // Confirm the old interactive preemptive switch is gone
-    expect(screen.queryByRole('switch', { name: /Preemptivo/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('switch', { name: /Preemptive/i })).not.toBeInTheDocument();
   });
 
   it('does NOT show Quantum field for FCFS', () => {
@@ -62,7 +62,7 @@ describe('SchedulerConfig', () => {
     setAlgorithm('RR');
     render(<SchedulerConfig />);
     expect(screen.getByTestId('quantum-field')).toBeInTheDocument();
-    expect(screen.getByLabelText('Quantum do Round Robin')).toBeInTheDocument();
+    expect(screen.getByLabelText('Round Robin quantum')).toBeInTheDocument();
   });
 
   it('shows MLQ queue config panel when algorithm is MULTILEVEL', () => {
@@ -97,13 +97,13 @@ describe('SchedulerConfig', () => {
     const agingToggle = screen.getByRole('switch', { name: /Aging/i });
     await user.click(agingToggle);
     expect(screen.getByTestId('aging-interval-field')).toBeInTheDocument();
-    expect(screen.getByLabelText('Intervalo de aging')).toBeInTheDocument();
+    expect(screen.getByLabelText('Aging interval')).toBeInTheDocument();
   });
 
   it('updates the store when Quantum field is changed', () => {
     setAlgorithm('RR');
     render(<SchedulerConfig />);
-    const quantumInput = screen.getByLabelText('Quantum do Round Robin');
+    const quantumInput = screen.getByLabelText('Round Robin quantum');
     fireEvent.change(quantumInput, { target: { value: '5' } });
     expect(useProcessStore.getState().config.quantum).toBe(5);
   });

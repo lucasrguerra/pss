@@ -79,7 +79,7 @@ otherwise        → Balanced
 
 ## Charts ("Chart" tab)
 
-### Comparative Profile — Radar Chart
+### Comparative Profile (Radar Chart)
 
 Displayed when there are **2 or more processes**. Each axis represents a time dimension, normalized from 0–100% relative to the largest value in that dimension among all processes:
 
@@ -91,15 +91,15 @@ Displayed when there are **2 or more processes**. Each axis represents a time di
 | **CPU Time** | Relative CPU usage |
 | **I/O Time** | Relative I/O usage |
 
-Each process is drawn as a colored polygon (the color configured for the process). Wider polygons indicate processes with larger times in the corresponding dimensions. The radar chart is ideal for identifying **profile differences** between processes — for example, a CPU Bound process will have a much larger CPU Time axis than I/O Time.
+Each process is drawn as a colored polygon (the color configured for the process). Wider polygons indicate processes with larger times in the corresponding dimensions. The radar chart is ideal for identifying **profile differences** between processes (for example, a CPU Bound process will have a much larger CPU Time axis than I/O Time).
 
-### Per-Process Breakdown — Stacked Bar Chart
+### Per-Process Breakdown (Stacked Bar Chart)
 
 Always displayed. Each bar represents a process, with stacked segments:
 
-- **Amber** — Waiting Time
-- **Green** — CPU Time
-- **Cyan** — I/O Time
+- **Amber**: Waiting Time
+- **Green**: CPU Time
+- **Cyan**: I/O Time
 
 The total height of each bar equals the **Turnaround Time** of the process.
 

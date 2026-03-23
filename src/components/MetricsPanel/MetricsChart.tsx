@@ -32,13 +32,42 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
   if (metrics.length === 0) {
     return (
       <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
-        Nenhum dado disponível.
+        No data available.
       </div>
     );
   }
 
   const getName = (id: string) => processMap[id]?.name ?? id;
   const getColor = (id: string) => processMap[id]?.color ?? '#94a3b8';
+
+  // Reverse map: process name → process (for radar tooltip lookup)
+  const nameToProcess = Object.fromEntries(
+    Object.values(processMap).map(p => [p.name, p])
+  );
+
+  const radarTooltipContent = ({ active, payload, label }: { active?: boolean; payload?: readonly any[]; label?: string | number }) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div style={{ ...TOOLTIP_STYLE, padding: '8px 12px' }}>
+        <p style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: 4 }}>
+          {label}
+        </p>
+        {payload.map((entry: any) => {
+          const proc = nameToProcess[entry.name];
+          const displayName = proc?.pid != null ? `#${proc.pid} ${proc.name}` : entry.name;
+          return (
+            <div key={entry.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '11px', marginBottom: 2 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: entry.color, flexShrink: 0, display: 'inline-block' }} />
+              <span style={{ color: '#cbd5e1' }}>{displayName}</span>
+              <span style={{ marginLeft: 'auto', paddingLeft: 12, fontFamily: 'monospace', color: '#e2e8f0' }}>
+                {typeof entry.value === 'number' ? `${entry.value.toFixed(1)}%` : '-'}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   // ── Stacked bar data ──────────────────────────────────────────
   const barData = metrics.map((m) => ({
@@ -87,9 +116,9 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
       {showRadar && (
         <div className="flex-1 min-w-0">
           <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-medium text-center">
-            Perfil Comparativo (normalizado)
+            Comparative Profile (normalized)
           </p>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={400}>
             <RadarChart data={radarData} margin={{ top: 8, right: 20, bottom: 8, left: 20 }}>
               <PolarGrid stroke="#334155" />
               <PolarAngleAxis
@@ -108,10 +137,7 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
                   dot={{ r: 3, fill: getColor(m.processId) }}
                 />
               ))}
-              <Tooltip
-                contentStyle={TOOLTIP_STYLE}
-                formatter={(value) => [typeof value === 'number' ? `${value.toFixed(1)}%` : '-', '']}
-              />
+              <Tooltip content={radarTooltipContent} />
               <Legend
                 wrapperStyle={{ fontSize: '10px', paddingTop: '4px', color: '#94a3b8' }}
               />
@@ -123,9 +149,9 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
       {/* ── Stacked bar chart ─────────────────────────────────── */}
       <div className={showRadar ? 'flex-1 min-w-0' : 'w-full'}>
         <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-medium text-center">
-          Breakdown por Processo (ticks)
+          Breakdown per Process (ticks)
         </p>
-        <ResponsiveContainer width="100%" height={220}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart data={barData} margin={{ top: 8, right: 12, left: -8, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
             <XAxis

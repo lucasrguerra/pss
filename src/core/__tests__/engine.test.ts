@@ -236,11 +236,11 @@ describe("SimulationEngine — ciclo de vida", () => {
 });
 
 // ============================================================
-// SimulationEngine — chegada de processos
+// SimulationEngine — process arrival
 // Tests: late arrivals, idle ticks while waiting for process
 // ============================================================
 
-describe("SimulationEngine — chegada de processos", () => {
+describe("SimulationEngine — process arrival", () => {
   it("process arriving after simulation starts is correctly scheduled", () => {
     const engine = new SimulationEngine(
       [

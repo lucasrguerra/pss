@@ -66,7 +66,7 @@ const AppHeader = () => {
         <button
           onClick={() => setPresetsOpen(o => !o)}
           className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-md hover:bg-slate-700 transition-colors"
-          aria-label="Carregar cenário pré-definido"
+          aria-label="Load preset scenario"
         >
           <BookOpen size={13} />
           Presets
@@ -83,7 +83,7 @@ const AppHeader = () => {
             {/* Dropdown */}
             <div className="absolute right-0 top-full mt-1 w-72 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 overflow-hidden flex flex-col max-h-[min(32rem,calc(100vh-4rem))]">
               <div className="px-3 py-2 border-b border-slate-700 text-[10px] text-slate-400 uppercase tracking-wider font-medium shrink-0">
-                Cenários pré-definidos
+                Preset Scenarios
               </div>
               <div className="overflow-y-auto">
               {presets.map((preset, i) => (
@@ -112,16 +112,16 @@ const AppHeader = () => {
       {/* Import JSON */}
       <label
         htmlFor="import-json"
-        title={isSimulationActive ? 'Reinicie a simulação antes de importar' : 'Importar configuração JSON'}
+        title={isSimulationActive ? 'Reset the simulation before importing' : 'Import JSON configuration'}
         className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md transition-colors cursor-pointer ${
           isSimulationActive
             ? 'text-slate-600 cursor-not-allowed'
             : 'text-slate-300 hover:text-white hover:bg-slate-700'
         }`}
-        aria-label="Importar configuração JSON"
+        aria-label="Import JSON configuration"
       >
         <Upload size={13} />
-        Importar
+        Import
       </label>
       <input
         id="import-json"
@@ -131,19 +131,19 @@ const AppHeader = () => {
         className="sr-only"
         onChange={handleImportJSON}
         disabled={isSimulationActive}
-        aria-label="Selecionar arquivo JSON para importar"
+        aria-label="Select JSON file to import"
       />
 
       {/* Export JSON */}
       <button
         onClick={handleExportJSON}
         disabled={processes.length === 0}
-        title={processes.length === 0 ? 'Adicione processos antes de exportar' : 'Exportar configuração como JSON'}
+        title={processes.length === 0 ? 'Add processes before exporting' : 'Export configuration as JSON'}
         className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-md hover:bg-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        aria-label="Exportar configuração JSON"
+        aria-label="Export JSON configuration"
       >
         <Download size={13} />
-        Exportar
+        Export
       </button>
     </header>
   );

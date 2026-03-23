@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "PSS: A Browser-Based Interactive Simulator for CPU Scheduling Algorithms"
+version: 1.2.0
+date-released: "2026-03-23"
+license: MIT
+url: "https://pss.lucasrguerra.dev.br"
+repository-code: "https://github.com/lucasrguerra/pss"
+authors:
+  - family-names: Guerra
+    given-names: Lucas Rayan
+    orcid: "https://orcid.org/0009-0002-3170-4126"
+    affiliation: "Universidade Federal Rural de Pernambuco (UFRPE), Brazil"
+    email: lucas.guerra@ufrpe.br
+keywords:
+  - operating systems
+  - CPU scheduling
+  - process scheduling
+  - computer science education
+  - simulation
+  - visualization
+  - TypeScript
+  - React

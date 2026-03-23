@@ -13,7 +13,7 @@
 
 ## ✨ What is it?
 
-The **Process Scheduler Simulator (PSS)** runs entirely in the browser — no server, no system dependencies. You define the processes, choose the algorithm, and watch the simulation unfold in real time through the Gantt chart.
+The **Process Scheduler Simulator (PSS)** runs entirely in the browser, completely free of servers and system dependencies. You define the processes, choose the algorithm, and watch the simulation unfold in real time through the Gantt chart.
 
 Ideal for:
 - 📚 Operating Systems students who want to visualize what was once only theory
@@ -64,10 +64,10 @@ docker compose up
 
 ## 🎮 How to use
 
-1. **Create your processes** — In the left panel, add processes by defining name, arrival time, priority, and a sequence of bursts (CPU and I/O). Or use the random generator to get started quickly.
-2. **Configure the scheduler** — Choose an algorithm and adjust the parameters (quantum for RR, aging for Priority, etc.).
-3. **Run the simulation** — Use the Play/Pause/Step controls to run the simulation at the speed you want (0.25× to 4×).
-4. **Analyze the results** — The Gantt chart shows each process's state in real time. At the end, the metrics panel displays turnaround, waiting time, throughput, and more.
+1. **Create your processes**: In the left panel, add processes by defining name, arrival time, priority, and a sequence of bursts (CPU and I/O). Or use the random generator to get started quickly.
+2. **Configure the scheduler**: Choose an algorithm and adjust the parameters (quantum for RR, aging for Priority, etc.).
+3. **Run the simulation**: Use the Play/Pause/Step controls to run the simulation at the speed you want (0.25× to 4×).
+4. **Analyze the results**: The Gantt chart shows each process's state in real time. At the end, the metrics panel displays turnaround, waiting time, throughput, and more.
 
 > 💡 **Tip:** Load one of the built-in **presets** to see classic phenomena such as the FCFS convoy effect or priority starvation.
 
@@ -77,13 +77,13 @@ docker compose up
 
 | Algorithm | Preemptive? | Parameters |
 |-----------|:-----------:|------------|
-| **FCFS** — First Come, First Served | ❌ | — |
-| **SJF** — Shortest Job First | ❌ | — |
-| **SRTF** — Shortest Remaining Time First | ✅ | — |
+| **FCFS**: First Come, First Served | ❌ | None |
+| **SJF**: Shortest Job First | ❌ | None |
+| **SRTF**: Shortest Remaining Time First | ✅ | None |
 | **Round Robin (RR)** | ✅ | Quantum |
-| **Priority NP** — Non-Preemptive Priority | ❌ | Aging (optional) |
-| **Priority P** — Preemptive Priority | ✅ | Aging (optional) |
-| **HRRN** — Highest Response Ratio Next | ❌ | — |
+| **Priority NP**: Non-Preemptive Priority | ❌ | Aging (optional) |
+| **Priority P**: Preemptive Priority | ✅ | Aging (optional) |
+| **HRRN**: Highest Response Ratio Next | ❌ | None |
 | **Multilevel Queue** | ✅ | Quantum per queue |
 
 > See the [algorithms documentation](./docs/algorithms.en.md) for details on how each one works.
@@ -94,12 +94,12 @@ docker compose up
 
 For each simulated process, PSS automatically computes:
 
-- **Response Time** — time until the first CPU usage
-- **Turnaround Time** — total time from arrival to completion
-- **Waiting Time** — total time spent in the Ready queue
-- **CPU Time / I/O Time** — effective time in each type of burst
-- **CPU Utilization** — percentage of turnaround time spent on CPU
-- **Bound Type** — automatic classification as CPU Bound, I/O Bound, or Balanced
+- **Response Time**: time until the first CPU usage
+- **Turnaround Time**: total time from arrival to completion
+- **Waiting Time**: total time spent in the Ready queue
+- **CPU Time / I/O Time**: effective time in each type of burst
+- **CPU Utilization**: percentage of turnaround time spent on CPU
+- **Bound Type**: automatic classification as CPU Bound, I/O Bound, or Balanced
 
 Globally: averages for response/turnaround/waiting, throughput, and overall CPU utilization.
 
@@ -109,7 +109,7 @@ Globally: averages for response/turnaround/waiting, throughput, and overall CPU 
 
 ```
 src/
-├── core/                    # Pure logic — no React
+├── core/                    # Pure logic (no React)
 │   ├── algorithms/          # Implementation of each algorithm
 │   │   ├── base.ts          # Abstract class BaseScheduler
 │   │   ├── fcfs.ts
@@ -120,7 +120,7 @@ src/
 │   │   ├── hrrn.ts
 │   │   ├── multilevel.ts
 │   │   └── index.ts         # Dispatch by algorithm
-│   ├── engine.ts            # SimulationEngine — orchestrates the ticks
+│   ├── engine.ts            # SimulationEngine, orchestrates the ticks
 │   ├── metrics.ts           # Per-process and global metrics computation
 │   ├── types.ts             # All TypeScript interfaces
 │   └── presets.ts           # Pre-defined scenarios
@@ -189,9 +189,9 @@ Tests cover the simulation engine, all scheduling algorithms, and metrics comput
 
 ## 📄 Additional Documentation
 
-- [📐 Scheduling Algorithms](./docs/algorithms.en.md) — detailed description of each algorithm, tie-breaking rules, and examples
-- [📏 Metrics](./docs/metrics.en.md) — formulas and definitions for all computed metrics
-- [📝 JOSS Paper](./paper.md) — scientific paper submitted to the Journal of Open Source Software
+- [📐 Scheduling Algorithms](./docs/algorithms.en.md): detailed description of each algorithm, tie-breaking rules, and examples
+- [📏 Metrics](./docs/metrics.en.md): formulas and definitions for all computed metrics
+- [📝 JOSS Paper](./paper.md): scientific paper submitted to the Journal of Open Source Software
 
 *Também disponível em: [🇧🇷 Português](./README.md)*
 

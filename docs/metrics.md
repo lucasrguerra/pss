@@ -79,7 +79,7 @@ caso contrário   → Balanced
 
 ## Gráficos (aba "Gráfico")
 
-### Perfil Comparativo — Radar Chart
+### Perfil Comparativo (Radar Chart)
 
 Exibido quando há **2 ou mais processos**. Cada eixo representa uma dimensão de tempo, normalizada de 0–100% em relação ao maior valor dessa dimensão entre todos os processos:
 
@@ -91,15 +91,15 @@ Exibido quando há **2 ou mais processos**. Cada eixo representa uma dimensão d
 | **CPU Time** | Uso de CPU relativo |
 | **I/O Time** | Uso de I/O relativo |
 
-Cada processo é desenhado como um polígono colorido (a cor configurada no processo). Polígonos mais "amplos" indicam processos com tempos maiores nas dimensões correspondentes. O radar é ideal para identificar **diferenças de perfil** entre processos — por exemplo, um processo CPU Bound terá o eixo CPU Time muito maior que o eixo I/O Time.
+Cada processo é desenhado como um polígono colorido (a cor configurada no processo). Polígonos mais "amplos" indicam processos com tempos maiores nas dimensões correspondentes. O radar é ideal para identificar **diferenças de perfil** entre processos (por exemplo, um processo CPU Bound terá o eixo CPU Time muito maior que o eixo I/O Time).
 
-### Breakdown por Processo — Stacked Bar Chart
+### Breakdown por Processo (Stacked Bar Chart)
 
 Sempre exibido. Cada barra representa um processo, com os segmentos empilhados:
 
-- **Âmbar** — Waiting Time
-- **Verde** — CPU Time
-- **Ciano** — I/O Time
+- **Âmbar**: Waiting Time
+- **Verde**: CPU Time
+- **Ciano**: I/O Time
 
 A altura total de cada barra equivale ao **Turnaround Time** do processo.
 
