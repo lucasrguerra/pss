@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { hrrn } from "../algorithms/hrrn";
+import { HRRNAlgorithm } from "../algorithms/hrrn";
 import { SimulationEngine } from "../engine";
 import type { Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const hrrn = new HRRNAlgorithm();
 
 function makeRt(id: string, remainingBurst: number, waitingTime: number, arrivalTick = 0): ProcessRuntime {
   return {
@@ -24,7 +26,7 @@ const p = (id: string, arrival: number, cpuDuration: number): Process => ({
 
 describe("HRRN select()", () => {
   it("returns null for empty queue", () => {
-    expect(hrrn.select([], config)).toBeNull();
+    expect(hrrn.select([])).toBeNull();
   });
 
   it("picks process with highest response ratio", () => {
@@ -35,20 +37,18 @@ describe("HRRN select()", () => {
     const r1 = makeRt("p1", 8, 0);
     const r2 = makeRt("p2", 3, 6);
     const r3 = makeRt("p3", 5, 2);
-    expect(hrrn.select([r1, r2, r3], config)?.processId).toBe("p2");
+    expect(hrrn.select([r1, r2, r3])?.processId).toBe("p2");
   });
 
   it("tiebreaks equal ratio by arrival then id", () => {
     // Both ratio = (4 + 4) / 4 = 2.0
     const r1 = makeRt("p2", 4, 4, 1); // arrives at 1
     const r2 = makeRt("p1", 4, 4, 2); // arrives at 2
-    expect(hrrn.select([r1, r2], config)?.processId).toBe("p2");
+    expect(hrrn.select([r1, r2])?.processId).toBe("p2");
   });
 
   it("shouldPreempt always false", () => {
-    const a = makeRt("p1", 4, 0);
-    const b = makeRt("p2", 4, 10);
-    expect(hrrn.shouldPreempt(a, b, config)).toBe(false);
+    expect(hrrn.shouldPreempt()).toBe(false);
   });
 });
 
@@ -79,5 +79,13 @@ describe("HRRN integration", () => {
     const ticks = engine.runAll();
     // After P1 (ticks 0-2), P3 should win (ratio 2.5 > 1.5)
     expect(ticks[3]?.cpuProcess).toBe("p3");
+  });
+});
+
+describe("HRRNAlgorithm — metadados", () => {
+  it("expõe propriedades educacionais corretas", () => {
+    expect(hrrn.name).toContain("HRRN");
+    expect(hrrn.isPreemptiveCapable).toBe(false);
+    expect(hrrn.usesQuantum).toBe(false);
   });
 });

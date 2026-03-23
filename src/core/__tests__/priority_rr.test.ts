@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { priorityRr } from "../algorithms/priority_rr";
+import { PriorityRoundRobinAlgorithm } from "../algorithms/priority_rr";
 import { SimulationEngine } from "../engine";
 import type { Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const priorityRr = new PriorityRoundRobinAlgorithm();
 
 // ----------------------------------------------------------------
 // Helpers
@@ -58,22 +60,22 @@ const p = (
 
 describe("PRIORITY_RR select()", () => {
   it("returns null for empty queue", () => {
-    expect(priorityRr.select([], cfg())).toBeNull();
+    expect(priorityRr.select([])).toBeNull();
   });
 
   it("picks the process with the lowest priority number (highest priority)", () => {
     const high = makeRt("high", 1);
     const low = makeRt("low", 5);
-    expect(priorityRr.select([low, high], cfg())?.processId).toBe("high");
-    expect(priorityRr.select([high, low], cfg())?.processId).toBe("high");
+    expect(priorityRr.select([low, high])?.processId).toBe("high");
+    expect(priorityRr.select([high, low])?.processId).toBe("high");
   });
 
   it("picks the FIRST in insertion order when priorities are equal (FIFO = RR)", () => {
     const a = makeRt("a", 3);
     const b = makeRt("b", 3);
     const c = makeRt("c", 3);
-    expect(priorityRr.select([a, b, c], cfg())?.processId).toBe("a");
-    expect(priorityRr.select([b, c, a], cfg())?.processId).toBe("b");
+    expect(priorityRr.select([a, b, c])?.processId).toBe("a");
+    expect(priorityRr.select([b, c, a])?.processId).toBe("b");
   });
 
   it("ignores lower-priority processes when a higher-priority one is present", () => {
@@ -81,7 +83,7 @@ describe("PRIORITY_RR select()", () => {
     const normal1 = makeRt("n1", 5);
     const normal2 = makeRt("n2", 5);
     expect(
-      priorityRr.select([normal1, normal2, critical], cfg())?.processId,
+      priorityRr.select([normal1, normal2, critical])?.processId,
     ).toBe("critical");
   });
 });
@@ -94,19 +96,19 @@ describe("PRIORITY_RR shouldPreempt()", () => {
   it("preempts when candidate has strictly higher priority", () => {
     const running = makeRt("current", 5);
     const higher = makeRt("higher", 1);
-    expect(priorityRr.shouldPreempt(running, higher, cfg())).toBe(true);
+    expect(priorityRr.shouldPreempt(running, higher)).toBe(true);
   });
 
   it("does NOT preempt for same priority (quantum handles rotation)", () => {
     const a = makeRt("a", 3);
     const b = makeRt("b", 3);
-    expect(priorityRr.shouldPreempt(a, b, cfg())).toBe(false);
+    expect(priorityRr.shouldPreempt(a, b)).toBe(false);
   });
 
   it("does NOT preempt when candidate has lower priority", () => {
     const running = makeRt("current", 1);
     const lower = makeRt("lower", 5);
-    expect(priorityRr.shouldPreempt(running, lower, cfg())).toBe(false);
+    expect(priorityRr.shouldPreempt(running, lower)).toBe(false);
   });
 });
 
@@ -116,13 +118,13 @@ describe("PRIORITY_RR shouldPreempt()", () => {
 
 describe("PRIORITY_RR isQuantumExpired()", () => {
   it("returns true when quantumRemaining <= 0", () => {
-    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 0), cfg())).toBe(true);
-    expect(priorityRr.isQuantumExpired(makeRt("p", 5, -1), cfg())).toBe(true);
+    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 0))).toBe(true);
+    expect(priorityRr.isQuantumExpired(makeRt("p", 5, -1))).toBe(true);
   });
 
   it("returns false when quantum is not exhausted", () => {
-    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 1), cfg())).toBe(false);
-    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 2), cfg())).toBe(false);
+    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 1))).toBe(false);
+    expect(priorityRr.isQuantumExpired(makeRt("p", 5, 2))).toBe(false);
   });
 });
 
@@ -244,5 +246,13 @@ describe("PRIORITY_RR integration — combined preemption + RR", () => {
     expect(rts.find((r) => r.processId === "p1")!.cpuTime).toBe(4);
     expect(rts.find((r) => r.processId === "p2")!.cpuTime).toBe(4);
     expect(rts.find((r) => r.processId === "p3")!.cpuTime).toBe(2);
+  });
+});
+
+describe("PriorityRoundRobinAlgorithm — metadados", () => {
+  it("expõe propriedades educacionais corretas", () => {
+    expect(priorityRr.name).toContain("Priority Round Robin");
+    expect(priorityRr.isPreemptiveCapable).toBe(true);
+    expect(priorityRr.usesQuantum).toBe(true);
   });
 });

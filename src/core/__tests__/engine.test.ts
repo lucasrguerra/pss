@@ -193,10 +193,11 @@ describe("CT-04: SRTF Preemption", () => {
 });
 
 // ============================================================
-// General engine behaviour
+// SimulationEngine — ciclo de vida
+// Tests: isFinished, step() guard, runAll vs step equivalence
 // ============================================================
 
-describe("SimulationEngine general", () => {
+describe("SimulationEngine — ciclo de vida", () => {
   it("isFinished returns false mid-run, true after runAll", () => {
     const engine = new SimulationEngine(
       [p("p1", 0, [{ type: "cpu", duration: 3 }])],
@@ -232,22 +233,14 @@ describe("SimulationEngine general", () => {
 
     expect(fromRunAll).toEqual(fromStep);
   });
+});
 
-  it("process with I/O: transitions through Waiting state", () => {
-    const engine = new SimulationEngine(
-      [p("p1", 0, [{ type: "cpu", duration: 2 }, { type: "io", duration: 2 }, { type: "cpu", duration: 1 }])],
-      cfg(),
-    );
-    const ticks = engine.runAll();
-    const states = ticks.map((t) => t.states["p1"]);
-    // Running for 2, Waiting for 2, Running for 1
-    expect(states[0]).toBe("Running");
-    expect(states[1]).toBe("Running");
-    expect(states[2]).toBe("Waiting");
-    expect(states[3]).toBe("Waiting");
-    expect(states[4]).toBe("Running");
-  });
+// ============================================================
+// SimulationEngine — chegada de processos
+// Tests: late arrivals, idle ticks while waiting for process
+// ============================================================
 
+describe("SimulationEngine — chegada de processos", () => {
   it("process arriving after simulation starts is correctly scheduled", () => {
     const engine = new SimulationEngine(
       [
@@ -261,7 +254,14 @@ describe("SimulationEngine general", () => {
     expect(ticks[4]?.cpuProcess).toBeNull(); // tick 4: idle
     expect(ticks[5]?.cpuProcess).toBe("p2");
   });
+});
 
+// ============================================================
+// SimulationEngine — troca de contexto
+// Tests: idle ticks during switch, ctxSwitchForProcess across overhead
+// ============================================================
+
+describe("SimulationEngine — troca de contexto", () => {
   it("context switch inserts idle ticks between processes", () => {
     const engine = new SimulationEngine(
       [
@@ -296,5 +296,27 @@ describe("SimulationEngine general", () => {
     expect(ticks[3]?.ctxSwitchForProcess).toBe("p2");
     expect(ticks[4]?.contextSwitching).toBe(false);
     expect(ticks[4]?.ctxSwitchForProcess).toBeNull();
+  });
+});
+
+// ============================================================
+// SimulationEngine — I/O
+// Tests: Waiting state, IO burst transitions
+// ============================================================
+
+describe("SimulationEngine — I/O", () => {
+  it("process with I/O: transitions through Waiting state", () => {
+    const engine = new SimulationEngine(
+      [p("p1", 0, [{ type: "cpu", duration: 2 }, { type: "io", duration: 2 }, { type: "cpu", duration: 1 }])],
+      cfg(),
+    );
+    const ticks = engine.runAll();
+    const states = ticks.map((t) => t.states["p1"]);
+    // Running for 2, Waiting for 2, Running for 1
+    expect(states[0]).toBe("Running");
+    expect(states[1]).toBe("Running");
+    expect(states[2]).toBe("Waiting");
+    expect(states[3]).toBe("Waiting");
+    expect(states[4]).toBe("Running");
   });
 });

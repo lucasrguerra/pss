@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { sjfNp, srtf } from "../algorithms/sjf";
+import { SJFNonPreemptiveAlgorithm, SRTFAlgorithm } from "../algorithms/sjf";
 import { SimulationEngine } from "../engine";
 import type { Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const sjfNp = new SJFNonPreemptiveAlgorithm();
+const srtf = new SRTFAlgorithm();
+
+
 
 function makeRt(id: string, remainingBurst: number, arrivalTick = 0): ProcessRuntime {
   return {
@@ -23,27 +28,25 @@ const p = (id: string, arrival: number, bursts: { type: "cpu" | "io"; duration: 
 
 describe("SJF_NP select()", () => {
   it("returns null for empty queue", () => {
-    expect(sjfNp.select([], config)).toBeNull();
+    expect(sjfNp.select([])).toBeNull();
   });
 
   it("picks shortest remaining burst", () => {
     const r1 = makeRt("p1", 8);
     const r2 = makeRt("p2", 3);
     const r3 = makeRt("p3", 5);
-    expect(sjfNp.select([r1, r2, r3], config)?.processId).toBe("p2");
+    expect(sjfNp.select([r1, r2, r3])?.processId).toBe("p2");
   });
 
   it("tiebreaks equal burst by arrival then id", () => {
     const r1 = makeRt("p2", 4, 1);
     const r2 = makeRt("p1", 4, 2);
     // p2 arrives earlier
-    expect(sjfNp.select([r1, r2], config)?.processId).toBe("p2");
+    expect(sjfNp.select([r1, r2])?.processId).toBe("p2");
   });
 
   it("shouldPreempt always false", () => {
-    const a = makeRt("p1", 4);
-    const b = makeRt("p2", 2);
-    expect(sjfNp.shouldPreempt(a, b, config)).toBe(false);
+    expect(sjfNp.shouldPreempt()).toBe(false);
   });
 });
 
@@ -51,19 +54,19 @@ describe("SRTF shouldPreempt()", () => {
   it("preempts when candidate has strictly smaller burst", () => {
     const current = makeRt("p1", 7);
     const candidate = makeRt("p2", 4);
-    expect(srtf.shouldPreempt(current, candidate, config)).toBe(true);
+    expect(srtf.shouldPreempt(current, candidate)).toBe(true);
   });
 
   it("does NOT preempt on equal remaining burst", () => {
     const current = makeRt("p1", 4);
     const candidate = makeRt("p2", 4);
-    expect(srtf.shouldPreempt(current, candidate, config)).toBe(false);
+    expect(srtf.shouldPreempt(current, candidate)).toBe(false);
   });
 
   it("does NOT preempt when current has smaller burst", () => {
     const current = makeRt("p1", 3);
     const candidate = makeRt("p2", 6);
-    expect(srtf.shouldPreempt(current, candidate, config)).toBe(false);
+    expect(srtf.shouldPreempt(current, candidate)).toBe(false);
   });
 });
 
@@ -90,5 +93,18 @@ describe("CT-04: SRTF Preemption (integration)", () => {
     const rt1 = rts.find((r) => r.processId === "p1")!;
     expect(rt2.finishTick).toBe(5);
     expect(rt1.finishTick).toBe(12);
+  });
+});
+
+describe("SJF/SRTF — metadados", () => {
+  it("SJFNonPreemptiveAlgorithm: isPreemptiveCapable=false, usesQuantum=false", () => {
+    expect(sjfNp.isPreemptiveCapable).toBe(false);
+    expect(sjfNp.usesQuantum).toBe(false);
+    expect(sjfNp.name).toContain("Shortest Job First");
+  });
+  it("SRTFAlgorithm: isPreemptiveCapable=true, usesQuantum=false", () => {
+    expect(srtf.isPreemptiveCapable).toBe(true);
+    expect(srtf.usesQuantum).toBe(false);
+    expect(srtf.name).toContain("SRTF");
   });
 });

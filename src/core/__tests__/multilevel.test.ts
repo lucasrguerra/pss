@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { multilevel } from "../algorithms/multilevel";
+import { MultilevelQueueAlgorithm } from "../algorithms/multilevel";
 import { SimulationEngine } from "../engine";
 import type { MlqQueueDef, Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const multilevel = new MultilevelQueueAlgorithm();
 
 // ----------------------------------------------------------------
 // Helpers
@@ -230,5 +232,13 @@ describe("MULTILEVEL integration — strict queue ordering", () => {
     expect(rts.find((r) => r.processId === "p1")!.cpuTime).toBe(3);
     expect(rts.find((r) => r.processId === "p2")!.cpuTime).toBe(3);
     expect(rts.find((r) => r.processId === "p3")!.cpuTime).toBe(3);
+  });
+});
+
+describe("MultilevelQueueAlgorithm — metadados", () => {
+  it("expõe propriedades educacionais corretas", () => {
+    expect(multilevel.name).toContain("Multilevel");
+    expect(multilevel.isPreemptiveCapable).toBe(true);
+    expect(multilevel.usesQuantum).toBe(true);
   });
 });

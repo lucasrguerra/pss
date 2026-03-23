@@ -1,61 +1,31 @@
-import type { ProcessRuntime, SchedulerConfig, SchedulingAlgorithm } from "../types";
-import { fcfs } from "./fcfs";
-import { sjfNp, srtf } from "./sjf";
-import { rr } from "./rr";
-import { priorityNp, priorityP } from "./priority";
-import { priorityRr } from "./priority_rr";
-import { hrrn } from "./hrrn";
-import { multilevel } from "./multilevel";
+import type { SchedulingAlgorithm } from "../types";
+import { BaseAlgorithm } from "./base";
+import { FCFSAlgorithm } from "./fcfs";
+import { SJFNonPreemptiveAlgorithm, SRTFAlgorithm } from "./sjf";
+import { RoundRobinAlgorithm } from "./rr";
+import { PriorityNonPreemptiveAlgorithm, PriorityPreemptiveAlgorithm } from "./priority";
+import { PriorityRoundRobinAlgorithm } from "./priority_rr";
+import { HRRNAlgorithm } from "./hrrn";
+import { MultilevelQueueAlgorithm } from "./multilevel";
+
+export type { BaseAlgorithm };
 
 // ============================================================
-// SchedulerAlgorithm interface
-// All implementations must be pure (no mutation of the queue).
+// Tabela de despacho — o engine busca o algoritmo pelo nome
 // ============================================================
+//
+// As instâncias são criadas uma única vez no carregamento do módulo.
+// Isso é seguro pois todas as classes são stateless: todo estado mutável
+// da simulação vive em ProcessRuntime, gerenciado pelo SimulationEngine.
 
-export interface SchedulerAlgorithm {
-  /**
-   * Select the best process to dispatch from the ready queue.
-   * Returns null if the queue is empty.
-   * Must NOT mutate the array; the engine handles removal.
-   */
-  select(
-    readyQueue: readonly ProcessRuntime[],
-    config: SchedulerConfig,
-  ): ProcessRuntime | null;
-
-  /**
-   * For preemptive algorithms: should the currently-running process
-   * be replaced by `candidate`?
-   * Called only when cpuProcess != null and a candidate exists.
-   */
-  shouldPreempt(
-    current: ProcessRuntime,
-    candidate: ProcessRuntime,
-    config: SchedulerConfig,
-  ): boolean;
-
-  /**
-   * RR only: has the process exhausted its quantum?
-   * For all other algorithms this must return false.
-   */
-  isQuantumExpired(
-    runtime: ProcessRuntime,
-    config: SchedulerConfig,
-  ): boolean;
-}
-
-// ============================================================
-// Dispatch table — engine looks up algorithm by name
-// ============================================================
-
-export const algorithms: Record<SchedulingAlgorithm, SchedulerAlgorithm> = {
-  FCFS: fcfs,
-  SJF_NP: sjfNp,
-  SJF_P: srtf,
-  RR: rr,
-  PRIORITY_NP: priorityNp,
-  PRIORITY_P: priorityP,
-  PRIORITY_RR: priorityRr,
-  HRRN: hrrn,
-  MULTILEVEL: multilevel,
+export const algorithms: Record<SchedulingAlgorithm, BaseAlgorithm> = {
+  FCFS:        new FCFSAlgorithm(),
+  SJF_NP:      new SJFNonPreemptiveAlgorithm(),
+  SJF_P:       new SRTFAlgorithm(),
+  RR:          new RoundRobinAlgorithm(),
+  PRIORITY_NP: new PriorityNonPreemptiveAlgorithm(),
+  PRIORITY_P:  new PriorityPreemptiveAlgorithm(),
+  PRIORITY_RR: new PriorityRoundRobinAlgorithm(),
+  HRRN:        new HRRNAlgorithm(),
+  MULTILEVEL:  new MultilevelQueueAlgorithm(),
 };

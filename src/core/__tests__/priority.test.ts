@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { priorityNp, priorityP } from "../algorithms/priority";
+import { PriorityNonPreemptiveAlgorithm, PriorityPreemptiveAlgorithm } from "../algorithms/priority";
 import { SimulationEngine } from "../engine";
 import type { Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const priorityNp = new PriorityNonPreemptiveAlgorithm();
+const priorityP = new PriorityPreemptiveAlgorithm();
 
 function makeRt(id: string, priority: number, arrivalTick = 0): ProcessRuntime {
   return {
@@ -16,10 +19,6 @@ const cfgNp: SchedulerConfig = {
   algorithm: "PRIORITY_NP", quantum: 2, contextSwitchTime: 0,
   isPreemptive: false, agingEnabled: false, agingInterval: 5,
 };
-const cfgP: SchedulerConfig = {
-  algorithm: "PRIORITY_P", quantum: 2, contextSwitchTime: 0,
-  isPreemptive: true, agingEnabled: false, agingInterval: 5,
-};
 
 const p = (id: string, arrival: number, priority: number, cpuDuration: number): Process => ({
   id, name: id, arrivalTime: arrival, priority, color: "#fff",
@@ -31,19 +30,17 @@ describe("PRIORITY_NP select()", () => {
     const r1 = makeRt("p1", 5);
     const r2 = makeRt("p2", 2);
     const r3 = makeRt("p3", 8);
-    expect(priorityNp.select([r1, r2, r3], cfgNp)?.processId).toBe("p2");
+    expect(priorityNp.select([r1, r2, r3])?.processId).toBe("p2");
   });
 
   it("tiebreaks by arrival then id", () => {
     const r1 = makeRt("p2", 3, 2);
     const r2 = makeRt("p1", 3, 5); // p1 arrives later
-    expect(priorityNp.select([r1, r2], cfgNp)?.processId).toBe("p2");
+    expect(priorityNp.select([r1, r2])?.processId).toBe("p2");
   });
 
   it("shouldPreempt always false", () => {
-    const a = makeRt("p1", 5);
-    const b = makeRt("p2", 1);
-    expect(priorityNp.shouldPreempt(a, b, cfgNp)).toBe(false);
+    expect(priorityNp.shouldPreempt()).toBe(false);
   });
 });
 
@@ -51,19 +48,19 @@ describe("PRIORITY_P shouldPreempt()", () => {
   it("preempts when candidate has higher priority (lower number)", () => {
     const current = makeRt("p1", 5);
     const candidate = makeRt("p2", 2);
-    expect(priorityP.shouldPreempt(current, candidate, cfgP)).toBe(true);
+    expect(priorityP.shouldPreempt(current, candidate)).toBe(true);
   });
 
   it("does NOT preempt on equal priority", () => {
     const current = makeRt("p1", 3);
     const candidate = makeRt("p2", 3);
-    expect(priorityP.shouldPreempt(current, candidate, cfgP)).toBe(false);
+    expect(priorityP.shouldPreempt(current, candidate)).toBe(false);
   });
 
   it("does NOT preempt when current has higher priority", () => {
     const current = makeRt("p1", 2);
     const candidate = makeRt("p2", 5);
-    expect(priorityP.shouldPreempt(current, candidate, cfgP)).toBe(false);
+    expect(priorityP.shouldPreempt(current, candidate)).toBe(false);
   });
 });
 
@@ -114,5 +111,16 @@ describe("Priority P + aging", () => {
     }
     const rt = engine.runtimeStates[0]!;
     expect(rt.currentPriority).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("Priority — metadados", () => {
+  it("PriorityNonPreemptiveAlgorithm: isPreemptiveCapable=false", () => {
+    expect(priorityNp.isPreemptiveCapable).toBe(false);
+    expect(priorityNp.usesQuantum).toBe(false);
+  });
+  it("PriorityPreemptiveAlgorithm: isPreemptiveCapable=true", () => {
+    expect(priorityP.isPreemptiveCapable).toBe(true);
+    expect(priorityP.usesQuantum).toBe(false);
   });
 });

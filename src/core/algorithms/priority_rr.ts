@@ -1,49 +1,59 @@
-import type { SchedulerAlgorithm } from "./index";
+import type { ProcessRuntime } from "../types";
+import { BaseAlgorithm } from "./base";
 
 /**
  * Priority Round Robin (PRIORITY_RR)
  *
- * Mimics real-OS scheduling (Windows priority bands, POSIX SCHED_RR):
+ * Combina escalonamento por prioridade com rodízio dentro de cada banda:
  *
- * - The ready queue is conceptually divided into priority bands.
- * - The scheduler always dispatches from the highest-priority band
- *   (lowest numeric value), leaving lower-priority processes waiting.
- * - Within the same priority band, processes share the CPU via round-robin
- *   with the configured quantum — fairness among equals.
- * - A running process is preempted immediately when a STRICTLY higher-priority
- *   process becomes ready (arrival or I/O completion).
- * - Quantum expiry only rotates within the same priority band; it does not
- *   allow a lower-priority process to run while a same-priority one is waiting.
- * - Compatible with the aging mechanism: as low-priority processes age their
- *   currentPriority decreases, eventually entering a higher-priority band.
+ * - A fila de prontos é dividida conceitualmente em bandas de prioridade.
+ * - O escalonador sempre despacha da banda de maior prioridade (menor número),
+ *   mantendo processos de menor prioridade em espera.
+ * - Dentro de uma mesma banda, os processos compartilham a CPU via round-robin
+ *   com o quantum configurado — garantindo justiça entre iguais.
+ * - Preempção ocorre imediatamente ao chegar um processo de prioridade
+ *   estritamente maior; prioridade igual é tratada pelo quantum.
+ * - Compatível com aging: ao diminuir `currentPriority`, processos de baixa
+ *   prioridade eventualmente sobem de banda, prevenindo inanição.
+ *
+ * Simula o comportamento de SOs reais como Windows (priority bands)
+ * e POSIX SCHED_RR.
  */
-export const priorityRr: SchedulerAlgorithm = {
-  select(readyQueue) {
+export class PriorityRoundRobinAlgorithm extends BaseAlgorithm {
+  readonly name = "Priority Round Robin (PRR)";
+  readonly description =
+    "Combina prioridade com round-robin dentro de cada banda. A banda mais " +
+    "prioritária sempre executa primeiro; dentro da mesma banda, os processos " +
+    "se revezam pelo quantum. Simula o escalonamento de SOs reais (Windows, POSIX).";
+  readonly isPreemptiveCapable = true;
+  readonly usesQuantum = true;
+
+  select(readyQueue: readonly ProcessRuntime[]): ProcessRuntime | null {
     if (readyQueue.length === 0) return null;
 
-    // Find the highest priority level (smallest numeric value) present.
+    // Localiza o nível de prioridade mais alto (menor valor numérico) presente.
     let bestPriority = Infinity;
     for (const rt of readyQueue) {
       if (rt.currentPriority < bestPriority) bestPriority = rt.currentPriority;
     }
 
-    // Within that band, return the first process (FIFO insertion order).
-    // The engine maintains insertion order, so this gives round-robin rotation
-    // after quantum expiry: the expired process goes to the tail, the next
-    // same-priority process is now at the head.
+    // Dentro da banda, retorna o primeiro processo (ordem de inserção = FIFO).
+    // O engine insere processos expirados no final da fila, garantindo a rotação
+    // round-robin: o processo que esgotou o quantum vai para o fim,
+    // o próximo da mesma prioridade assume.
     return readyQueue.find(rt => rt.currentPriority === bestPriority) ?? null;
-  },
+  }
 
-  // Preempt ONLY for strictly higher priority.
-  // Same-priority candidates are handled by quantum expiry — no unnecessary
-  // context switches within a priority band.
-  shouldPreempt(current, candidate) {
+  // Preempta APENAS por prioridade estritamente maior.
+  // Processos de mesma prioridade são tratados pelo mecanismo de quantum —
+  // evita trocas de contexto desnecessárias dentro da mesma banda.
+  shouldPreempt(current: ProcessRuntime, candidate: ProcessRuntime): boolean {
     return candidate.currentPriority < current.currentPriority;
-  },
+  }
 
-  // Quantum expiry drives round-robin rotation within a priority band,
-  // exactly like plain Round Robin.
-  isQuantumExpired(runtime) {
+  // A expiração do quantum conduz a rotação round-robin dentro da banda,
+  // exatamente como no Round Robin puro.
+  isQuantumExpired(runtime: ProcessRuntime): boolean {
     return runtime.quantumRemaining <= 0;
-  },
-};
+  }
+}

@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { rr } from "../algorithms/rr";
+import { RoundRobinAlgorithm } from "../algorithms/rr";
 import { SimulationEngine } from "../engine";
 import type { Process, ProcessRuntime, SchedulerConfig } from "../types";
+
+const rr = new RoundRobinAlgorithm();
 
 function makeRt(id: string, quantumRemaining = 2): ProcessRuntime {
   return {
@@ -26,32 +28,30 @@ describe("RR select()", () => {
   it("returns front of queue (FIFO)", () => {
     const r1: ProcessRuntime = { ...makeRt("p1"), state: "Ready" };
     const r2: ProcessRuntime = { ...makeRt("p2"), state: "Ready" };
-    expect(rr.select([r1, r2], config)?.processId).toBe("p1");
-    expect(rr.select([r2, r1], config)?.processId).toBe("p2");
+    expect(rr.select([r1, r2])?.processId).toBe("p1");
+    expect(rr.select([r2, r1])?.processId).toBe("p2");
   });
 
   it("returns null for empty queue", () => {
-    expect(rr.select([], config)).toBeNull();
+    expect(rr.select([])).toBeNull();
   });
 });
 
 describe("RR isQuantumExpired()", () => {
   it("returns true when quantumRemaining <= 0", () => {
-    expect(rr.isQuantumExpired(makeRt("p1", 0), config)).toBe(true);
-    expect(rr.isQuantumExpired(makeRt("p1", -1), config)).toBe(true);
+    expect(rr.isQuantumExpired(makeRt("p1", 0))).toBe(true);
+    expect(rr.isQuantumExpired(makeRt("p1", -1))).toBe(true);
   });
 
   it("returns false when quantum not yet exhausted", () => {
-    expect(rr.isQuantumExpired(makeRt("p1", 1), config)).toBe(false);
-    expect(rr.isQuantumExpired(makeRt("p1", 2), config)).toBe(false);
+    expect(rr.isQuantumExpired(makeRt("p1", 1))).toBe(false);
+    expect(rr.isQuantumExpired(makeRt("p1", 2))).toBe(false);
   });
 });
 
 describe("RR shouldPreempt()", () => {
   it("always returns false (preemption via quantum expiry only)", () => {
-    const a = makeRt("p1");
-    const b = makeRt("p2");
-    expect(rr.shouldPreempt(a, b, config)).toBe(false);
+    expect(rr.shouldPreempt()).toBe(false);
   });
 });
 
@@ -112,5 +112,13 @@ describe("CT-02: Round Robin integration", () => {
     expect(rt2.cpuTime).toBe(3);
     expect(rt1.cpuTime).toBe(2);
     void ticks; // used for debugging if needed
+  });
+});
+
+describe("RoundRobinAlgorithm — metadados", () => {
+  it("expõe propriedades educacionais corretas", () => {
+    expect(rr.name).toContain("Round Robin");
+    expect(rr.isPreemptiveCapable).toBe(false);
+    expect(rr.usesQuantum).toBe(true);
   });
 });

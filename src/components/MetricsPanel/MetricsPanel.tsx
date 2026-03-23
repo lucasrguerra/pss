@@ -46,7 +46,7 @@ const MetricsPanel = () => {
   const canExportCSV = status === 'finished' && processMetrics.length > 0;
 
   return (
-    <div className="border-t border-slate-700 bg-slate-950 flex flex-col shrink-0" style={{ height: '280px' }}>
+    <div className="border-t border-slate-700 bg-slate-950 flex flex-col shrink-0" style={{ height: '340px' }}>
       {/* Panel header with tabs + export button */}
       <div className="flex items-center px-3 border-b border-slate-700 shrink-0 h-10 gap-1">
         {TAB_CONFIG.map(tab => (

@@ -1,22 +1,36 @@
-import type { SchedulerAlgorithm } from "./index";
+import type { ProcessRuntime } from "../types";
+import { BaseAlgorithm } from "./base";
 
 /**
  * RR — Round Robin
- * FIFO queue with a configurable quantum.
- * select() returns the front of the queue (insertion-order maintained by engine).
- * Preemption is driven by quantum expiry, not by a better candidate.
+ *
+ * Mantém a fila de prontos como FIFO e concede a cada processo uma fatia
+ * de tempo (quantum). Ao esgotar o quantum, o processo vai para o fim da
+ * fila e o próximo assume a CPU. Garante justiça e baixo tempo de resposta,
+ * ao custo de maior tempo de turnaround para processos curtos.
+ *
+ * A rotação é garantida pelo engine: ao expirar o quantum, o processo é
+ * reinserido no final da fila — select() simplesmente retorna o primeiro.
  */
-export const rr: SchedulerAlgorithm = {
-  select(readyQueue) {
+export class RoundRobinAlgorithm extends BaseAlgorithm {
+  readonly name = "Round Robin (RR)";
+  readonly description =
+    "Fila FIFO com quantum configurável. Cada processo recebe uma fatia " +
+    "de tempo igual. Garante justiça e baixo tempo de resposta, mas pode " +
+    "aumentar o turnaround de processos longos.";
+  readonly isPreemptiveCapable = false; // preempção é por expiração de quantum, não por candidato
+  readonly usesQuantum = true;
+
+  select(readyQueue: readonly ProcessRuntime[]): ProcessRuntime | null {
     return readyQueue[0] ?? null;
-  },
+  }
 
-  // RR does not preempt based on candidate priority; quantum expiry handles it.
-  shouldPreempt() {
+  // RR não preempta por candidato mais prioritário; a troca ocorre via quantum.
+  shouldPreempt(): boolean {
     return false;
-  },
+  }
 
-  isQuantumExpired(runtime) {
+  isQuantumExpired(runtime: ProcessRuntime): boolean {
     return runtime.quantumRemaining <= 0;
-  },
-};
+  }
+}
