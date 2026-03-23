@@ -199,7 +199,7 @@ Tests cover the simulation engine, all scheduling algorithms, and metrics comput
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to open an [issue](https://github.com/lucasrguerra/pss/issues) or submit a Pull Request.
+Contributions are welcome! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) guide for details on our code of conduct, and the process for submitting Pull Requests to us.
 
 ---
 

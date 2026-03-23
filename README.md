@@ -197,7 +197,7 @@ Os testes cobrem a engine de simulação, todos os algoritmos de escalonamento, 
 
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Sinta-se livre para abrir uma [issue](https://github.com/lucasrguerra/pss/issues) ou enviar um Pull Request.
+Contribuições são bem-vindas! Por favor, consulte nosso guia em [CONTRIBUTING.md](./CONTRIBUTING.md) para obter detalhes sobre como configurar o ambiente de desenvolvimento, reportar bugs ou enviar um Pull Request.
 
 ---
 
