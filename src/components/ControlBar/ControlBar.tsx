@@ -66,7 +66,7 @@ const ControlBar = () => {
 
   return (
     <div
-      className="h-16 flex items-center px-5 gap-3 bg-slate-800 border-b border-slate-700 shadow-sm"
+      className="h-16 py-2 flex items-center px-5 gap-3 bg-slate-800 border-b border-slate-700 shadow-sm"
       role="toolbar"
       aria-label="Simulation controls"
     >

@@ -1,6 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { useProcessStore } from '../../store/processStore';
-import type { MlqQueueDef, SchedulingAlgorithm } from '@core/types';
+import type { MlfqLevelDef, MlqQueueDef, SchedulingAlgorithm } from '@core/types';
+import { MLFQAlgorithm } from '@core/algorithms/mlfq';
 
 // Algorithms that require a global quantum parameter
 const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'PRIORITY_RR']);
@@ -9,7 +10,7 @@ const QUANTUM_ALGORITHMS = new Set<SchedulingAlgorithm>(['RR', 'PRIORITY_RR']);
 const AGING_ALGORITHMS = new Set<SchedulingAlgorithm>(['PRIORITY_NP', 'PRIORITY_P', 'PRIORITY_RR']);
 
 // Algorithms that are preemptive by definition (used for read-only info only)
-const PREEMPTIVE_BY_DESIGN = new Set<SchedulingAlgorithm>(['SJF_P', 'RR', 'PRIORITY_P', 'PRIORITY_RR', 'MULTILEVEL']);
+const PREEMPTIVE_BY_DESIGN = new Set<SchedulingAlgorithm>(['SJF_P', 'RR', 'PRIORITY_P', 'PRIORITY_RR', 'MULTILEVEL', 'MLFQ']);
 
 const inputCls = 'w-full rounded-md bg-slate-700 border border-slate-600 text-slate-200 text-sm px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500';
 const labelCls = 'block text-xs text-slate-400 mb-1';
@@ -153,6 +154,94 @@ const MlqQueuesConfig = ({
   );
 };
 
+const MlfqLevelsConfig = ({
+  levels,
+  boostInterval,
+  onLevelsChange,
+  onBoostChange,
+}: {
+  levels: MlfqLevelDef[];
+  boostInterval: number;
+  onLevelsChange: (levels: MlfqLevelDef[]) => void;
+  onBoostChange: (v: number) => void;
+}) => {
+  const update = (idx: number, quantum: number) => {
+    onLevelsChange(levels.map((l, i) => (i === idx ? { quantum } : l)));
+  };
+
+  const addLevel = () => {
+    if (levels.length >= 5) return;
+    onLevelsChange([...levels, { quantum: levels[levels.length - 1]!.quantum * 2 }]);
+  };
+
+  const removeLevel = (idx: number) => {
+    if (levels.length <= 1) return;
+    onLevelsChange(levels.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div className="space-y-2 pt-1" data-testid="mlfq-levels-config">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">MLFQ Levels (decreasing priority)</span>
+        <button
+          onClick={addLevel}
+          disabled={levels.length >= 5}
+          className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
+          aria-label="Add MLFQ level"
+        >
+          <Plus size={11} /> Level
+        </button>
+      </div>
+      {levels.map((l, idx) => (
+        <div
+          key={idx}
+          className="rounded-md border border-slate-600 bg-slate-800/60 p-2 space-y-1.5"
+          data-testid={`mlfq-level-${idx}`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
+              Level {idx} {idx === 0 ? '(highest)' : idx === levels.length - 1 ? '(lowest)' : ''}
+            </span>
+            <button
+              onClick={() => removeLevel(idx)}
+              disabled={levels.length <= 1}
+              className="text-slate-500 hover:text-red-400 disabled:text-slate-700 disabled:cursor-not-allowed transition-colors"
+              aria-label={`Remove level ${idx}`}
+            >
+              <Trash2 size={11} />
+            </button>
+          </div>
+          <div>
+            <label className="block text-[10px] text-slate-500 mb-0.5">Quantum (ticks)</label>
+            <input
+              type="number"
+              min={1}
+              value={l.quantum}
+              onChange={e => update(idx, Math.max(1, Number(e.target.value)))}
+              className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label={`Level ${idx}: quantum`}
+            />
+          </div>
+        </div>
+      ))}
+      <div>
+        <label className="block text-[10px] text-slate-500 mb-0.5">
+          Boost Interval (ticks, 0 = disabled)
+        </label>
+        <input
+          type="number"
+          min={0}
+          value={boostInterval}
+          onChange={e => onBoostChange(Math.max(0, Number(e.target.value)))}
+          className="w-full rounded bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          aria-label="MLFQ boost interval"
+          data-testid="mlfq-boost-interval"
+        />
+      </div>
+    </div>
+  );
+};
+
 const SchedulerConfig = () => {
   const config = useProcessStore(s => s.config);
   const setConfig = useProcessStore(s => s.setConfig);
@@ -248,6 +337,16 @@ const SchedulerConfig = () => {
         <MlqQueuesConfig
           queues={config.mlqQueues ?? []}
           onChange={queues => setConfig({ mlqQueues: queues })}
+        />
+      )}
+
+      {/* MLFQ Level Configuration */}
+      {algo === 'MLFQ' && (
+        <MlfqLevelsConfig
+          levels={config.mlfqLevels ?? MLFQAlgorithm.DEFAULT_LEVELS}
+          boostInterval={config.mlfqBoostInterval ?? 0}
+          onLevelsChange={levels => setConfig({ mlfqLevels: levels })}
+          onBoostChange={v => setConfig({ mlfqBoostInterval: v })}
         />
       )}
     </div>

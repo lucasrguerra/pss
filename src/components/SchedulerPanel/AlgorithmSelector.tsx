@@ -3,14 +3,15 @@ import { useProcessStore } from '../../store/processStore';
 
 const ALGORITHM_OPTIONS: { value: SchedulingAlgorithm; label: string; disabled?: boolean }[] = [
   { value: 'FCFS',        label: 'FCFS — First Come First Served' },
-  { value: 'SJF_NP',     label: 'SJF — Shortest Job First (NP)' },
-  { value: 'SJF_P',      label: 'SRTF — Shortest Remaining Time (P)' },
+  { value: 'SJF_NP',     label: 'SJF — Shortest Job First (Non-preemptive)' },
+  { value: 'SJF_P',      label: 'SRTF — Shortest Remaining Time (Preemptive)' },
   { value: 'RR',         label: 'RR — Round Robin' },
   { value: 'PRIORITY_NP',label: 'Priority (Non-preemptive)' },
   { value: 'PRIORITY_P', label: 'Priority (Preemptive)' },
   { value: 'PRIORITY_RR',label: 'Priority Round Robin (real-time)' },
   { value: 'HRRN',       label: 'HRRN — Highest Response Ratio Next' },
-  { value: 'MULTILEVEL', label: 'Multilevel Queue (MLQ)' },
+  { value: 'MULTILEVEL', label: 'MLQ — Multilevel Queue' },
+  { value: 'MLFQ',      label: 'MLFQ — Multilevel Feedback Queue' },
 ];
 
 const AlgorithmSelector = () => {

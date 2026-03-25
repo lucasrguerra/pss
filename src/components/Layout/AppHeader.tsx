@@ -86,23 +86,61 @@ const AppHeader = () => {
                 Preset Scenarios
               </div>
               <div className="overflow-y-auto">
-              {presets.map((preset, i) => (
-                <button
-                  key={preset.name}
-                  onClick={() => handleLoadPreset(i)}
-                  className="w-full text-left px-3 py-2.5 hover:bg-slate-700 transition-colors group"
-                >
-                  <div className="text-xs font-medium text-slate-200 group-hover:text-white">
-                    {preset.name}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                    {preset.description}
-                  </div>
-                  <div className="text-[10px] text-blue-400 mt-0.5">
-                    {preset.config.algorithm}
-                  </div>
-                </button>
-              ))}
+                {/* Classic process presets */}
+                <div className="px-3 py-1 text-[9px] text-slate-500 uppercase tracking-wider font-semibold bg-slate-800/80 sticky top-0">
+                  Processes
+                </div>
+                {presets
+                  .filter(p => !['many_to_one','one_to_one','many_to_many','thread_starvation','threads_vs_processes'].includes(p.name))
+                  .map((preset) => {
+                    const i = presets.indexOf(preset);
+                    return (
+                      <button
+                        key={preset.name}
+                        onClick={() => handleLoadPreset(i)}
+                        className="w-full text-left px-3 py-2.5 hover:bg-slate-700 transition-colors group"
+                      >
+                        <div className="text-xs font-medium text-slate-200 group-hover:text-white">
+                          {preset.name}
+                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                          {preset.description}
+                        </div>
+                        <div className="text-[10px] text-blue-400 mt-0.5">
+                          {preset.config.algorithm}
+                        </div>
+                      </button>
+                    );
+                  })}
+
+                {/* Thread presets */}
+                <div className="px-3 py-1 text-[9px] text-slate-500 uppercase tracking-wider font-semibold bg-slate-800/80 sticky top-0 border-t border-slate-700 mt-1">
+                  Threads
+                </div>
+                {presets
+                  .filter(p => ['many_to_one','one_to_one','many_to_many','thread_starvation','threads_vs_processes'].includes(p.name))
+                  .map((preset) => {
+                    const i = presets.indexOf(preset);
+                    return (
+                      <button
+                        key={preset.name}
+                        onClick={() => handleLoadPreset(i)}
+                        className="w-full text-left px-3 py-2.5 hover:bg-slate-700 transition-colors group"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <div className="text-xs font-medium text-slate-200 group-hover:text-white">
+                            {preset.name}
+                          </div>
+                          <span className="text-[8px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
+                            THREADS
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                          {preset.description}
+                        </div>
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           </>

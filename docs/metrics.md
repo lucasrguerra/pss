@@ -105,6 +105,41 @@ A altura total de cada barra equivale ao **Turnaround Time** do processo.
 
 ---
 
+## Métricas de Threads
+
+Quando um processo possui threads, o PSS calcula métricas individuais para cada thread. Essas métricas são exibidas na aba **Threads** do painel de métricas (visível apenas quando há processos com threads).
+
+### Métricas por Thread
+
+| Métrica | Fórmula | O que significa |
+|---------|---------|----------------|
+| **Arrival Time** | `arrivalTick` | Tick em que a thread entrou pela primeira vez na fila Ready |
+| **Start** | `startTick` | Tick em que a thread usou a CPU pela primeira vez |
+| **Finish** | `finishTick` | Tick em que a thread encerrou todos os seus bursts |
+| **Response Time** | `startTick − arrivalTick` | Quanto a thread esperou antes de receber a CPU pela primeira vez |
+| **Turnaround Time** | `finishTick − arrivalTick` | Tempo total de vida da thread (chegada → término) |
+| **Waiting Time** | `turnaround − cpuTime − ioTime` | Tempo na fila Ready sem executar nada útil |
+| **CPU Time** | Σ ticks em estado Running | Total de CPU consumido pela thread |
+| **I/O Time** | Σ ticks em estado Waiting | Total de tempo aguardando I/O |
+
+### Modelos de Thread e seu impacto nas métricas
+
+O modelo de thread afeta diretamente os tempos registrados:
+
+| Modelo | Impacto no Waiting Time |
+|--------|------------------------|
+| **MANY_TO_ONE** | Waiting Time tende a ser alto: qualquer I/O de uma thread bloqueia todo o processo, forçando as demais threads a esperarem |
+| **ONE_TO_ONE** | Waiting Time menor: threads bloqueiam independentemente; enquanto uma faz I/O, as outras continuam na fila Ready |
+| **MANY_TO_MANY** | Waiting Time intermediário: threads que excedem os slots de kernel ficam em `KernelWait` (indicadas com `opacity` reduzida no Gantt) |
+
+### Visualização
+
+A tabela de threads exibe mini barras de progresso horizontais nas colunas de Response, Turnaround, Waiting, CPU e I/O, normalizadas pelo maior valor de cada coluna entre todas as threads — assim como na tabela de processos.
+
+Cada thread possui uma cor derivada da cor do processo pai (deslocamento de matiz HSL de 40° por thread), exibida como ponto colorido na tabela e como sub-linha no Gantt.
+
+---
+
 ## Exemplo
 
 Considere três processos com os seguintes bursts:

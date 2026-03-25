@@ -64,10 +64,10 @@ docker compose up
 
 ## 🎮 How to use
 
-1. **Create your processes**: In the left panel, add processes by defining name, arrival time, priority, and a sequence of bursts (CPU and I/O). Or use the random generator to get started quickly.
-2. **Configure the scheduler**: Choose an algorithm and adjust the parameters (quantum for RR, aging for Priority, etc.).
+1. **Create your processes**: In the left panel, add processes by defining name, arrival time, priority, and a sequence of bursts (CPU and I/O). Enable the **Use Threads** toggle to create threads within a process, choosing the model (MANY_TO_ONE, ONE_TO_ONE, or MANY_TO_MANY) and the intra-process policy (FCFS, RR, or Priority).
+2. **Configure the scheduler**: Choose an algorithm and adjust the parameters (quantum for RR, aging for Priority, quantums and boost interval for MLFQ, etc.).
 3. **Run the simulation**: Use the Play/Pause/Step controls to run the simulation at the speed you want (0.25× to 4×).
-4. **Analyze the results**: The Gantt chart shows each process's state in real time. At the end, the metrics panel displays turnaround, waiting time, throughput, and more.
+4. **Analyze the results**: The Gantt chart shows each process's state in real time (and its threads, when configured). At the end, the metrics panel displays turnaround, waiting time, throughput, and — in the Threads tab — individual per-thread metrics.
 
 > 💡 **Tip:** Load one of the built-in **presets** to see classic phenomena such as the FCFS convoy effect or priority starvation.
 
@@ -83,8 +83,10 @@ docker compose up
 | **Round Robin (RR)** | ✅ | Quantum |
 | **Priority NP**: Non-Preemptive Priority | ❌ | Aging (optional) |
 | **Priority P**: Preemptive Priority | ✅ | Aging (optional) |
+| **Priority RR**: Priority with Round Robin | ✅ | Quantum + Aging (optional) |
 | **HRRN**: Highest Response Ratio Next | ❌ | None |
 | **Multilevel Queue** | ✅ | Quantum per queue |
+| **MLFQ**: Multilevel Feedback Queue | ✅ | Quantums per queue + boost interval |
 
 > See the [algorithms documentation](./docs/algorithms.en.md) for details on how each one works.
 
@@ -119,20 +121,30 @@ src/
 │   │   ├── priority_rr.ts
 │   │   ├── hrrn.ts
 │   │   ├── multilevel.ts
+│   │   ├── mlfq.ts          # Multilevel Feedback Queue
 │   │   └── index.ts         # Dispatch by algorithm
-│   ├── engine.ts            # SimulationEngine, orchestrates the ticks
-│   ├── metrics.ts           # Per-process and global metrics computation
+│   ├── engine.ts            # SimulationEngine, orchestrates the ticks (thread-aware)
+│   ├── thread-scheduler.ts  # Intra-process scheduler (FCFS / RR / Priority)
+│   ├── metrics.ts           # Per-process, global, and per-thread metrics computation
 │   ├── types.ts             # All TypeScript interfaces
-│   └── presets.ts           # Pre-defined scenarios
+│   └── presets.ts           # Pre-defined scenarios (processes and threads)
 │
 ├── store/                   # Global state with Zustand
 ├── components/              # React components
 │   ├── ProcessPanel/        # Process creation and editing
+│   │   ├── ThreadEditor.tsx # Thread editor (model, policy, per-thread bursts)
+│   │   └── ...
 │   ├── SchedulerPanel/      # Algorithm selection and parameters
 │   ├── ControlBar/          # Play, Pause, Step, Reset, speed
 │   ├── GanttChart/          # Interactive Gantt chart
+│   │   ├── GanttThreadRow.tsx  # Thread sub-row in the Gantt chart
+│   │   └── ...
 │   ├── MetricsPanel/        # Table, charts, and global metrics
+│   │   ├── ThreadMetricsTable.tsx  # Per-thread metrics table
+│   │   └── ...
 │   └── shared/              # Buttons, badges, tooltips, modals
+│       ├── threadUtils.ts   # Thread color derivation (HSL)
+│       └── ...
 │
 └── hooks/                   # Custom hooks (animation loop, export, etc.)
 ```
@@ -143,6 +155,8 @@ src/
 
 Load classic scenarios with a single click to explore OS phenomena:
 
+**Processes:**
+
 | Preset | What it demonstrates |
 |--------|----------------------|
 | `classic_fcfs` | Basic execution with FCFS, no I/O |
@@ -152,6 +166,16 @@ Load classic scenarios with a single click to explore OS phenomena:
 | `aging_fix` | The same starvation scenario, solved with aging |
 | `io_heavy` | Mix of CPU Bound vs. I/O Bound processes |
 | `multilevel_demo` | Multiple queues with different priorities |
+
+**Threads:**
+
+| Preset | What it demonstrates |
+|--------|----------------------|
+| `many_to_one` | N:1 model — any thread's I/O blocks the entire process |
+| `one_to_one` | 1:1 model — threads block independently |
+| `many_to_many` | N:M model — kernel slots limit parallelism |
+| `thread_starvation` | Intra-process starvation with Priority policy |
+| `threads_vs_processes` | Direct comparison: threaded process vs single-burst process |
 
 ---
 

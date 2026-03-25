@@ -105,6 +105,41 @@ The total height of each bar equals the **Turnaround Time** of the process.
 
 ---
 
+## Thread Metrics
+
+When a process has threads, PSS computes individual metrics for each thread. These metrics are displayed in the **Threads** tab of the metrics panel (visible only when there are processes with threads).
+
+### Per-Thread Metrics
+
+| Metric | Formula | What it means |
+|--------|---------|----------------|
+| **Arrival Time** | `arrivalTick` | Tick at which the thread first entered the Ready queue |
+| **Start** | `startTick` | Tick at which the thread first used the CPU |
+| **Finish** | `finishTick` | Tick at which the thread completed all of its bursts |
+| **Response Time** | `startTick − arrivalTick` | How long the thread waited before receiving the CPU for the first time |
+| **Turnaround Time** | `finishTick − arrivalTick` | Total lifetime of the thread (arrival → completion) |
+| **Waiting Time** | `turnaround − cpuTime − ioTime` | Time in the Ready queue without doing anything useful |
+| **CPU Time** | Σ ticks in Running state | Total CPU consumed by the thread |
+| **I/O Time** | Σ ticks in Waiting state | Total time waiting for I/O |
+
+### Thread Models and their impact on metrics
+
+The thread model directly affects the recorded times:
+
+| Model | Impact on Waiting Time |
+|-------|------------------------|
+| **MANY_TO_ONE** | Waiting Time tends to be high: any thread's I/O blocks the entire process, forcing other threads to wait |
+| **ONE_TO_ONE** | Lower Waiting Time: threads block independently; while one does I/O, the others remain in the Ready queue |
+| **MANY_TO_MANY** | Intermediate Waiting Time: threads that exceed the kernel slots enter `KernelWait` (shown with reduced opacity in the Gantt chart) |
+
+### Visualization
+
+The thread table displays inline horizontal mini progress bars in the Response, Turnaround, Waiting, CPU, and I/O columns, normalized by the largest value in each column across all threads — just like the process metrics table.
+
+Each thread has a color derived from the parent process color (40° HSL hue shift per thread), shown as a colored dot in the table and as a sub-row in the Gantt chart.
+
+---
+
 ## Example
 
 Consider three processes with the following bursts:

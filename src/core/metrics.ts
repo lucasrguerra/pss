@@ -1,7 +1,11 @@
 import type {
   GlobalMetrics,
+  Process,
   ProcessMetrics,
   ProcessRuntime,
+  Thread,
+  ThreadMetrics,
+  ThreadRuntime,
 } from "./types";
 
 // ============================================================
@@ -80,6 +84,41 @@ export function computeGlobalMetrics(
     cpuThroughput: metrics.length / totalTicks,
     cpuUtilization: totalTicks > 0 ? (totalCpuTime / totalTicks) * 100 : 0,
     totalSimulationTime: totalTicks,
+  };
+}
+
+// ============================================================
+// Thread metrics
+// ============================================================
+
+export function computeThreadMetrics(
+  trt: ThreadRuntime,
+  thread: Thread,
+  process: Process,
+): ThreadMetrics {
+  if (trt.startTick === null || trt.finishTick === null) {
+    throw new Error(
+      `Cannot compute metrics for thread ${trt.threadId}: not yet terminated`,
+    );
+  }
+
+  const turnaroundTime = trt.finishTick - trt.arrivalTick;
+  const responseTime = trt.startTick - trt.arrivalTick;
+  const waitingTime = turnaroundTime - trt.cpuTime - trt.ioTime;
+
+  return {
+    threadId: trt.threadId,
+    processId: trt.processId,
+    threadName: thread.name,
+    processName: process.name,
+    arrivalTime: trt.arrivalTick,
+    startTick: trt.startTick,
+    finishTick: trt.finishTick,
+    responseTime,
+    turnaroundTime,
+    waitingTime: Math.max(0, waitingTime),
+    cpuTime: trt.cpuTime,
+    ioTime: trt.ioTime,
   };
 }
 

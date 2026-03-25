@@ -28,6 +28,22 @@ const TOOLTIP_STYLE = {
   boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
 };
 
+/**
+ * Wrapper that gives ResponsiveContainer a bounded, non-growing parent.
+ *
+ * Without this, recharts' ResizeObserver inside a scroll container can trigger
+ * a resize loop: scrollbar appears → available width shrinks → chart redraws →
+ * height shifts → scrollbar disappears → repeat. The explicit height + overflow
+ * hidden caps the chart's DOM footprint and breaks the loop.
+ */
+const ChartBox = ({ height, children }: { height: number; children: React.ReactNode }) => (
+  <div style={{ width: '100%', height, overflow: 'hidden', flexShrink: 0 }}>
+    <ResponsiveContainer width="100%" height="100%">
+      {children as React.ReactElement}
+    </ResponsiveContainer>
+  </div>
+);
+
 const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
   if (metrics.length === 0) {
     return (
@@ -80,10 +96,9 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
 
   // ── Radar chart data (normalized 0-100 per dimension) ─────────
   // Each "subject" is a process, each series is a dimension.
-  // We invert "Response" and "Waiting" so higher = better.
-  const maxT  = Math.max(...metrics.map(m => m.turnaroundTime), 1);
-  const maxR  = Math.max(...metrics.map(m => m.responseTime), 1);
-  const maxW  = Math.max(...metrics.map(m => m.waitingTime), 1);
+  const maxT   = Math.max(...metrics.map(m => m.turnaroundTime), 1);
+  const maxR   = Math.max(...metrics.map(m => m.responseTime), 1);
+  const maxW   = Math.max(...metrics.map(m => m.waitingTime), 1);
   const maxCpu = Math.max(...metrics.map(m => m.cpuTime), 1);
   const maxIo  = Math.max(...metrics.map(m => m.ioTime), 1);
 
@@ -98,11 +113,11 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
     metrics.forEach(m => {
       const key = getName(m.processId);
       switch (dim) {
-        case 'Turnaround': row[key] = (m.turnaroundTime / maxT) * 100; break;
-        case 'Response':   row[key] = (m.responseTime  / maxR)  * 100; break;
-        case 'Waiting':    row[key] = (m.waitingTime   / maxW)  * 100; break;
-        case 'CPU Time':   row[key] = (m.cpuTime       / maxCpu)* 100; break;
-        case 'I/O Time':   row[key] = (m.ioTime        / maxIo) * 100; break;
+        case 'Turnaround': row[key] = (m.turnaroundTime / maxT)   * 100; break;
+        case 'Response':   row[key] = (m.responseTime   / maxR)   * 100; break;
+        case 'Waiting':    row[key] = (m.waitingTime    / maxW)   * 100; break;
+        case 'CPU Time':   row[key] = (m.cpuTime        / maxCpu) * 100; break;
+        case 'I/O Time':   row[key] = (m.ioTime         / maxIo)  * 100; break;
       }
     });
     return row;
@@ -110,15 +125,18 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
 
   const showRadar = metrics.length >= 2;
 
+  // Charts are always stacked vertically (flex-col) so that the total height
+  // exceeds the panel's viewport, making the scroll area in MetricsPanel
+  // active and accessible on any screen size.
   return (
-    <div className={`p-3 flex gap-3 ${showRadar ? 'flex-row' : 'flex-col'}`}>
+    <div className="p-3 flex flex-col gap-6">
       {/* ── Radar chart ───────────────────────────────────────── */}
       {showRadar && (
-        <div className="flex-1 min-w-0">
+        <div className="w-full">
           <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-medium text-center">
             Comparative Profile (normalized)
           </p>
-          <ResponsiveContainer width="100%" height={400}>
+          <ChartBox height={360}>
             <RadarChart data={radarData} margin={{ top: 8, right: 20, bottom: 8, left: 20 }}>
               <PolarGrid stroke="#334155" />
               <PolarAngleAxis
@@ -142,16 +160,16 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
                 wrapperStyle={{ fontSize: '10px', paddingTop: '4px', color: '#94a3b8' }}
               />
             </RadarChart>
-          </ResponsiveContainer>
+          </ChartBox>
         </div>
       )}
 
       {/* ── Stacked bar chart ─────────────────────────────────── */}
-      <div className={showRadar ? 'flex-1 min-w-0' : 'w-full'}>
+      <div className="w-full">
         <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-medium text-center">
           Breakdown per Process (ticks)
         </p>
-        <ResponsiveContainer width="100%" height={400}>
+        <ChartBox height={360}>
           <BarChart data={barData} margin={{ top: 8, right: 12, left: -8, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
             <XAxis
@@ -183,7 +201,7 @@ const MetricsChart = ({ metrics, processMap }: MetricsChartProps) => {
             <Bar dataKey="CPU"     stackId="a" fill="#22c55e" radius={[0, 0, 0, 0]} />
             <Bar dataKey="I/O"     stackId="a" fill="#06b6d4" radius={[4, 4, 0, 0]} />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartBox>
         <p className="text-center text-[9px] text-slate-600 mt-0.5">
           Waiting + CPU + I/O = Turnaround
         </p>

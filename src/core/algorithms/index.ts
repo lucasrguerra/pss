@@ -7,6 +7,7 @@ import { PriorityNonPreemptiveAlgorithm, PriorityPreemptiveAlgorithm } from "./p
 import { PriorityRoundRobinAlgorithm } from "./priority_rr";
 import { HRRNAlgorithm } from "./hrrn";
 import { MultilevelQueueAlgorithm } from "./multilevel";
+import { MLFQAlgorithm } from "./mlfq";
 
 export type { BaseAlgorithm };
 
@@ -28,4 +29,5 @@ export const algorithms: Record<SchedulingAlgorithm, BaseAlgorithm> = {
   PRIORITY_RR: new PriorityRoundRobinAlgorithm(),
   HRRN:        new HRRNAlgorithm(),
   MULTILEVEL:  new MultilevelQueueAlgorithm(),
+  MLFQ:        new MLFQAlgorithm(),
 };

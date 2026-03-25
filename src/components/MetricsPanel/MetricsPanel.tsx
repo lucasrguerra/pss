@@ -1,20 +1,15 @@
 import { useState } from 'react';
-import { Download, BarChart2, Table, Globe } from 'lucide-react';
-import { computeProcessMetrics, computeGlobalMetrics } from '@core/metrics';
+import { Download, BarChart2, Table, Globe, Layers } from 'lucide-react';
+import { computeProcessMetrics, computeGlobalMetrics, computeThreadMetrics } from '@core/metrics';
 import { useSimulationStore } from '../../store/simulationStore';
 import { useProcessStore } from '../../store/processStore';
 import { useExport } from '../../hooks/useExport';
 import MetricsTable from './MetricsTable';
 import GlobalMetrics from './GlobalMetrics';
 import MetricsChart from './MetricsChart';
+import ThreadMetricsTable from './ThreadMetricsTable';
 
-type Tab = 'table' | 'global' | 'charts';
-
-const TAB_CONFIG: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'table', label: 'Per Process', icon: <Table size={13} /> },
-  { id: 'global', label: 'Global', icon: <Globe size={13} /> },
-  { id: 'charts', label: 'Charts', icon: <BarChart2 size={13} /> },
-];
+type Tab = 'table' | 'global' | 'charts' | 'threads';
 
 const MetricsPanel = () => {
   const [activeTab, setActiveTab] = useState<Tab>('table');
@@ -36,20 +31,39 @@ const MetricsPanel = () => {
     );
   }
 
-  // Derive metrics from engine runtime state
+  // ── Métricas de processos ──────────────────────────────────────────────
   const runtimes = engine?.runtimeStates ?? [];
   const completedRuntimes = runtimes.filter(rt => rt.finishTick !== null);
   const processMetrics = completedRuntimes.map(rt => computeProcessMetrics(rt));
   const globalMetrics = computeGlobalMetrics(processMetrics, ticks.length);
   const processMap = Object.fromEntries(processes.map(p => [p.id, p]));
 
+  // ── Métricas de threads ────────────────────────────────────────────────
+  const threadRuntimes = engine?.threadRuntimeStates ?? [];
+  const completedThreadRts = threadRuntimes.filter(trt => trt.finishTick !== null);
+  const threadMetrics = completedThreadRts.map(trt => {
+    const process = processMap[trt.processId];
+    const thread = process?.threads?.find(t => t.tid === trt.threadId);
+    if (!process || !thread) return null;
+    return computeThreadMetrics(trt, thread, process);
+  }).filter(Boolean) as ReturnType<typeof computeThreadMetrics>[];
+
+  const hasThreads = processes.some(p => (p.threads?.length ?? 0) > 0);
+
   const canExportCSV = status === 'finished' && processMetrics.length > 0;
 
+  const TAB_CONFIG: { id: Tab; label: string; icon: React.ReactNode; show: boolean }[] = [
+    { id: 'table',   label: 'Per Process', icon: <Table    size={13} />, show: true },
+    { id: 'global',  label: 'Global',      icon: <Globe    size={13} />, show: true },
+    { id: 'charts',  label: 'Charts',      icon: <BarChart2 size={13} />, show: true },
+    { id: 'threads', label: 'Threads',     icon: <Layers   size={13} />, show: hasThreads },
+  ];
+
   return (
-    <div className="border-t border-slate-700 bg-slate-950 flex flex-col shrink-0" style={{ height: '600px' }}>
+    <div className="border-t border-slate-700 bg-slate-950 flex flex-col overflow-hidden" style={{ height: '600px' }}>
       {/* Panel header with tabs + export button */}
       <div className="flex items-center px-3 border-b border-slate-700 shrink-0 h-10 gap-1">
-        {TAB_CONFIG.map(tab => (
+        {TAB_CONFIG.filter(t => t.show).map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -62,6 +76,11 @@ const MetricsPanel = () => {
           >
             {tab.icon}
             {tab.label}
+            {tab.id === 'threads' && threadMetrics.length > 0 && (
+              <span className="text-[9px] bg-blue-500/20 text-blue-400 px-1 rounded">
+                {threadMetrics.length}
+              </span>
+            )}
           </button>
         ))}
 
@@ -80,7 +99,7 @@ const MetricsPanel = () => {
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {activeTab === 'table' && (
           <MetricsTable metrics={processMetrics} processMap={processMap} />
         )}
@@ -89,6 +108,9 @@ const MetricsPanel = () => {
         )}
         {activeTab === 'charts' && (
           <MetricsChart metrics={processMetrics} processMap={processMap} />
+        )}
+        {activeTab === 'threads' && (
+          <ThreadMetricsTable metrics={threadMetrics} processMap={processMap} />
         )}
       </div>
     </div>

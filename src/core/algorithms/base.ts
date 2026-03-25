@@ -66,4 +66,16 @@ export abstract class BaseAlgorithm {
   public static tiebreak(a: ProcessRuntime, b: ProcessRuntime): number {
     return _tiebreak(a, b);
   }
+
+  /**
+   * Retorna o quantum a ser atribuído ao processo no momento do dispatch.
+   * Algoritmos com quantum por processo (ex.: MLFQ) devem sobrescrever este método.
+   * O padrão usa o quantum global da configuração.
+   */
+  public getQuantumForProcess(
+    _runtime: ProcessRuntime,
+    config: SchedulerConfig,
+  ): number {
+    return config.quantum;
+  }
 }

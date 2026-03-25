@@ -147,7 +147,7 @@ O processo com o **maior ratio** é selecionado. Isso faz com que processos que 
 
 ## Multilevel Queue
 
-**Tipo:** Preemptivo  
+**Tipo:** Preemptivo
 **Parâmetros:** número de filas, quantum por fila
 
 ### Como funciona
@@ -155,6 +155,106 @@ O processo com o **maior ratio** é selecionado. Isso faz com que processos que 
 Os processos são distribuídos em múltiplas filas com diferentes prioridades. Cada fila tem seu próprio quantum de Round Robin. Filas de maior prioridade sempre são servidas primeiro. Uma fila de menor prioridade só recebe CPU se todas as filas acima dela estiverem vazias.
 
 Isso permite tratar diferentes classes de processos de forma distinta: por exemplo, processos interativos em filas de alta prioridade (quantum pequeno) e processos batch em filas de baixa prioridade (quantum maior).
+
+---
+
+## MLFQ (Multilevel Feedback Queue)
+
+**Tipo:** Preemptivo
+**Parâmetros:** número de filas, quantum por fila (padrão: [2, 4, 8]), intervalo de boost
+
+### Como funciona
+
+O MLFQ é uma extensão do Multilevel Queue que permite **mover processos entre filas** com base em seu comportamento observado em tempo de execução — eliminando a necessidade de conhecer os bursts antecipadamente.
+
+#### Regras de movimentação
+
+| Evento | Ação |
+|--------|------|
+| Processo recém-chegado | Entra na **fila 0** (maior prioridade) |
+| Processo esgota o quantum da fila atual | **Rebaixado** para a fila seguinte (menor prioridade) |
+| Processo retorna do I/O | Permanece na **mesma fila** (comportamento cooperativo é recompensado) |
+| Tick de boost (intervalo configurável) | **Todos** os processos são movidos para a fila 0 |
+
+#### Por que o MLFQ é eficiente?
+
+- Processos interativos (I/O Bound) naturalmente ficam nas filas de alta prioridade porque abandonam a CPU antes de esgotar o quantum.
+- Processos batch (CPU Bound) migram progressivamente para filas de baixa prioridade onde recebem quantuns maiores.
+- O boost periódico evita starvation: mesmo processos que caíram para as filas inferiores eventual­mente retornam ao topo.
+
+#### Exemplo com 3 filas (quantuns: 2, 4, 8)
+
+```
+Processo A (CPU Bound, burst=12):
+  Fila 0 → usa 2 ticks, rebaixado → Fila 1
+  Fila 1 → usa 4 ticks, rebaixado → Fila 2
+  Fila 2 → usa 6 ticks restantes (quantum=8, não esgota)
+
+Processo B (I/O Bound, burst=1 CPU + I/O + burst=1 CPU):
+  Fila 0 → usa 1 tick → vai para I/O → retorna à Fila 0
+  → sempre permanece na fila de maior prioridade
+```
+
+### Parâmetros
+
+| Parâmetro | Padrão | Descrição |
+|-----------|--------|-----------|
+| Número de filas | 3 | Quantidade de filas de prioridade |
+| Quantuns por fila | [2, 4, 8] | Fatia de tempo de cada fila |
+| Intervalo de boost | 20 ticks | A cada N ticks, todos os processos sobem para a fila 0 |
+
+---
+
+## Modelos de Threads
+
+O PSS suporta simulação de **threads** dentro de processos, implementando os três modelos clássicos descritos em Sistemas Operacionais.
+
+### Conceitos Gerais
+
+- Um processo pode ter **N threads de usuário**, cada uma com sua própria sequência de bursts (CPU e I/O).
+- A política de escalonamento entre threads de um mesmo processo é configurável: **FCFS**, **Round Robin** ou **Prioridade**.
+- O modelo de thread determina como threads de usuário se mapeiam para threads de kernel.
+
+### MANY_TO_ONE (N:1)
+
+**N threads de usuário → 1 thread de kernel**
+
+- Apenas uma thread pode usar a CPU por vez dentro do processo.
+- Se qualquer thread iniciar I/O, **todo o processo bloqueia** (a thread de kernel fica presa).
+- Sem paralelismo real; muito simples de implementar.
+- Simulado pelos presets `many_to_one`.
+
+### ONE_TO_ONE (1:1)
+
+**Cada thread de usuário → 1 thread de kernel dedicada**
+
+- Threads bloqueiam **independentemente**: se a Thread A faz I/O, as Threads B e C continuam na fila Ready.
+- Processo só termina quando **todas** as threads terminam.
+- Processo bloqueia somente quando todas as threads estão simultâneamente em I/O.
+- Simulado pelos presets `one_to_one`.
+
+### MANY_TO_MANY (N:M)
+
+**N threads de usuário → M threads de kernel (M ≤ N)**
+
+- O número de threads de kernel (`kernelThreadCount`) é configurável.
+- Se todas as M slots de kernel estiverem ocupadas, threads de usuário adicionais ficam em **fila de espera de kernel** (`KernelWait`).
+- Combina flexibilidade com controle de recursos: mais threads ativas que N:1 mas menos overhead que 1:1.
+- Simulado pelos presets `many_to_many`.
+
+### Política Intra-Processo
+
+Define como o escalonador seleciona a próxima thread quando há múltiplas threads Ready no mesmo processo:
+
+| Política | Comportamento |
+|----------|--------------|
+| **FCFS** | Thread mais antiga na fila Ready é selecionada |
+| **Round Robin (RR)** | Cada thread recebe `threadQuantum` ticks; ao esgotar, vai para o fim da fila |
+| **Priority** | Thread de maior prioridade é selecionada; preempção imediata se nova thread de maior prioridade chegar |
+
+### Diagrama de Gantt com Threads
+
+Quando um processo possui threads, o Gantt exibe **sub-linhas** abaixo da linha do processo, uma por thread, com cores derivadas da cor do processo (deslocamento de matiz de 40° por thread). O estado de cada thread (New, Ready, Running, Waiting, Terminated) é colorido com as mesmas variáveis CSS dos processos.
 
 ---
 
