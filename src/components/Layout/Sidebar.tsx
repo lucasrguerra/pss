@@ -12,7 +12,7 @@ const Sidebar = () => {
       </div>
 
       <div className="h-12 border-t border-slate-700 flex items-center justify-center text-xs text-slate-500">
-        PSS v1.2.0
+        PSS v1.3.2
       </div>
     </aside>
   );
