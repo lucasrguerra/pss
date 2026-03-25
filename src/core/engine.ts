@@ -551,6 +551,24 @@ export class SimulationEngine {
       // ── CPU burst da thread concluído ────────────────────────────────────
       this._activeThreads.set(processId, null);
       this._handleThreadBurstComplete(cpu, activeThread, process);
+
+      // Se o quantum do processo também expirou neste mesmo tick, cede a CPU
+      // agora (após tratar o burst) em vez de dar um tick extra ao processo.
+      if (this._cpuProcess !== null && this._algorithm.isQuantumExpired(cpu, this._config)) {
+        const activeAfter = this._activeThreads.get(processId) ?? null;
+        if (activeAfter !== null) {
+          this._transitionThread(activeAfter, "Ready");
+          if (policy === "RR") {
+            this._readyThreadQueues.get(processId)!.push(activeAfter);
+          } else {
+            this._readyThreadQueues.get(processId)!.unshift(activeAfter);
+          }
+          this._activeThreads.set(processId, null);
+        }
+        this._transition(cpu, "Ready");
+        this._readyQueue.push(cpu);
+        this._cpuProcess = null;
+      }
     } else if (scheduler.isQuantumExpired(activeThread)) {
       // ── Quantum intra-processo expirou (RR): rotaciona thread ────────────
       this._transitionThread(activeThread, "Ready");

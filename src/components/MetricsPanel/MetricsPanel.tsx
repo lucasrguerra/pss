@@ -8,8 +8,9 @@ import MetricsTable from './MetricsTable';
 import GlobalMetrics from './GlobalMetrics';
 import MetricsChart from './MetricsChart';
 import ThreadMetricsTable from './ThreadMetricsTable';
+import ThreadMetricsChart from './ThreadMetricsChart';
 
-type Tab = 'table' | 'global' | 'charts' | 'threads';
+type Tab = 'table' | 'global' | 'charts' | 'threads' | 'thread-charts';
 
 const MetricsPanel = () => {
   const [activeTab, setActiveTab] = useState<Tab>('table');
@@ -53,14 +54,15 @@ const MetricsPanel = () => {
   const canExportCSV = status === 'finished' && processMetrics.length > 0;
 
   const TAB_CONFIG: { id: Tab; label: string; icon: React.ReactNode; show: boolean }[] = [
-    { id: 'table',   label: 'Per Process', icon: <Table    size={13} />, show: true },
-    { id: 'global',  label: 'Global',      icon: <Globe    size={13} />, show: true },
-    { id: 'charts',  label: 'Charts',      icon: <BarChart2 size={13} />, show: true },
-    { id: 'threads', label: 'Threads',     icon: <Layers   size={13} />, show: hasThreads },
+    { id: 'table',         label: 'Per Process',   icon: <Table     size={13} />, show: true },
+    { id: 'global',        label: 'Global',        icon: <Globe     size={13} />, show: true },
+    { id: 'charts',        label: 'Process Charts',        icon: <BarChart2 size={13} />, show: true },
+    { id: 'threads',       label: 'Threads',       icon: <Layers    size={13} />, show: hasThreads },
+    { id: 'thread-charts', label: 'Thread Charts', icon: <BarChart2 size={13} />, show: hasThreads },
   ];
 
   return (
-    <div className="border-t border-slate-700 bg-slate-950 flex flex-col overflow-hidden" style={{ height: '600px' }}>
+    <div className="border-t border-slate-700 bg-slate-950 flex flex-col">
       {/* Panel header with tabs + export button */}
       <div className="flex items-center px-3 border-b border-slate-700 shrink-0 h-10 gap-1">
         {TAB_CONFIG.filter(t => t.show).map(tab => (
@@ -86,7 +88,7 @@ const MetricsPanel = () => {
 
         <div className="ml-auto">
           <button
-            onClick={() => exportCSV(processMetrics, processMap)}
+            onClick={() => exportCSV(processMetrics, processMap, hasThreads ? threadMetrics : undefined)}
             disabled={!canExportCSV}
             title={!canExportCSV ? 'Available when simulation completes' : 'Export metrics as CSV'}
             className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 px-2.5 py-1 rounded-md hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -99,7 +101,7 @@ const MetricsPanel = () => {
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div>
         {activeTab === 'table' && (
           <MetricsTable metrics={processMetrics} processMap={processMap} />
         )}
@@ -111,6 +113,9 @@ const MetricsPanel = () => {
         )}
         {activeTab === 'threads' && (
           <ThreadMetricsTable metrics={threadMetrics} processMap={processMap} />
+        )}
+        {activeTab === 'thread-charts' && (
+          <ThreadMetricsChart metrics={threadMetrics} processMap={processMap} />
         )}
       </div>
     </div>

@@ -47,7 +47,7 @@ const GanttChart = () => {
           <div className="flex sticky top-0 z-10 bg-slate-950 border-b border-slate-800">
             <div
               className="sticky left-0 z-20 bg-slate-950 border-r border-slate-700 shrink-0"
-              style={{ width: 48, height: 16 }}
+              style={{ width: 60, height: 16 }}
             />
             {tickNumbers.map((t) => (
               <div
@@ -73,7 +73,7 @@ const GanttChart = () => {
                   >
                     <div
                       className="sticky left-0 z-20 bg-slate-900 border-r border-slate-700 px-2 flex items-center shrink-0"
-                      style={{ width: 48, height: CELL_H }}
+                      style={{ width: 60, height: CELL_H }}
                     >
                       <span
                         className="text-[10px] font-bold truncate"
@@ -117,7 +117,7 @@ const GanttChart = () => {
             {currentTickIndex >= 0 && (
               <div
                 className="gantt-cursor absolute top-0 bottom-0 w-px bg-white/20 pointer-events-none"
-                style={{ left: 48 + currentTickIndex * CELL_W + CELL_W / 2 }}
+                style={{ left: 60 + currentTickIndex * CELL_W + CELL_W / 2 }}
               />
             )}
           </div>

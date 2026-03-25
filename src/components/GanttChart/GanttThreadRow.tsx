@@ -39,7 +39,7 @@ const GanttThreadRow = React.memo(function GanttThreadRow({
       {/* Rótulo da thread (sticky) */}
       <div
         className="sticky left-0 z-20 bg-slate-900/90 border-r border-slate-700/50 px-2 flex items-center shrink-0 gap-1"
-        style={{ width: 48, height: THREAD_CELL_H }}
+        style={{ width: 60, height: THREAD_CELL_H }}
       >
         <span
           className="w-1.5 h-1.5 rounded-full shrink-0"

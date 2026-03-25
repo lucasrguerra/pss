@@ -1,5 +1,4 @@
-import type { ProcessMetrics } from "@core/types";
-import type { Process } from "@core/types";
+import type { ProcessMetrics, ThreadMetrics, Process } from "@core/types";
 
 interface ProcessMap {
   [id: string]: Process;
@@ -16,8 +15,13 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
 }
 
 export function useExport() {
-  const exportCSV = (metrics: ProcessMetrics[], processMap: ProcessMap) => {
-    const headers = [
+  const exportCSV = (
+    metrics: ProcessMetrics[],
+    processMap: ProcessMap,
+    threadMetrics?: ThreadMetrics[],
+  ) => {
+    // ── Seção de processos ─────────────────────────────────────────────────
+    const processHeaders = [
       "PID",
       "Process",
       "Priority",
@@ -33,7 +37,7 @@ export function useExport() {
       "Bound",
     ];
 
-    const rows = metrics.map((m) => {
+    const processRows = metrics.map((m) => {
       const proc = processMap[m.processId];
       const pid = proc?.pid ?? "";
       const name = proc?.name ?? m.processId;
@@ -55,7 +59,48 @@ export function useExport() {
       ].join(",");
     });
 
-    const csv = [headers.join(","), ...rows].join("\n");
+    const sections: string[] = [
+      "# Processes",
+      processHeaders.join(","),
+      ...processRows,
+    ];
+
+    // ── Seção de threads (opcional) ────────────────────────────────────────
+    if (threadMetrics && threadMetrics.length > 0) {
+      const threadHeaders = [
+        "Thread",
+        "Process",
+        "Arrival",
+        "Start",
+        "Finish",
+        "Response",
+        "Turnaround",
+        "Waiting",
+        "CPU Time",
+        "I/O Time",
+      ];
+
+      const threadRows = threadMetrics.map((t) => {
+        const proc = processMap[t.processId];
+        const procName = proc?.name ?? t.processId;
+        return [
+          t.threadName,
+          procName,
+          t.arrivalTime,
+          t.startTick,
+          t.finishTick,
+          t.responseTime,
+          t.turnaroundTime,
+          t.waitingTime,
+          t.cpuTime,
+          t.ioTime,
+        ].join(",");
+      });
+
+      sections.push("", "# Threads", threadHeaders.join(","), ...threadRows);
+    }
+
+    const csv = sections.join("\n");
     downloadBlob(csv, "pss-metrics.csv", "text/csv;charset=utf-8;");
   };
 
